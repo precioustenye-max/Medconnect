@@ -152,7 +152,7 @@ const Pharmacies = () => {
           <div
             className="w-full h-full"
             style={{
-              backgroundImage: "url('../src/assets/Pharmacist.jpg')",
+              backgroundImage: "url('/assets/Pharmacist.jpg')",
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}

@@ -132,7 +132,7 @@ function HomePage({ searchTerm }) {
               className="hidden md:block"
             >
               <img
-                src="../src/assets/Pharmacist.jpg"
+                src="/assets/Pharmacist.jpg"
                 alt="Pharmacist"
                 className="rounded-xl shadow-lg"
               />
@@ -190,7 +190,7 @@ function HomePage({ searchTerm }) {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-120px" }}
-            src="../src/assets/pharmacy-1.jpg"
+            src="/assets/pharmacy-1.jpg"
             alt="Pharmacist"
             className="rounded-2xl shadow-lg"
           />
@@ -267,7 +267,7 @@ function HomePage({ searchTerm }) {
           className="bg-gray-100 rounded-2xl"
         >
           <img
-            src="../src/assets/Pharma Industry – Digital Marketing Strategies For Pharma And Healthcare Sector.jpg"
+            src="/assets/pharma-industry-digital-marketing.jpg"
             alt="Pharmacist"
             className="rounded-2xl shadow-lg h-full"
           />
@@ -319,3 +319,4 @@ function Step({ num, title, desc }) {
     </li>
   );
 }
+

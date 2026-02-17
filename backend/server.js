@@ -13,7 +13,7 @@ const publicRoutes = require("./routes/public.routes");
 const adminRoutes = require("./routes/admin.routes");
 
 const app = express();
-const allowedOrigins = ["http://localhost:5173"];
+const allowedOrigins = ["http://localhost:5173", "https://medconnect-mu.vercel.app"];
 // (process.env.FRONTEND_URLS || "http://localhost:5173")
 //   .split(",")
 //   .map((origin) => origin.trim())
