@@ -1,0 +1,19 @@
+{
+  "name": "medconnect",
+  "version": "1.0.0",
+  "description": "A modern web application for an online pharmacy platform. The project provides a React + Vite frontend and a small PHP backend for authentication endpoints. Users can browse medicines, filter/search products, manage prescriptions, and purchase items using a shopping cart flow.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
+}
