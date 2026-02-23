@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Search } from "lucide-react";
+import { motion } from "framer-motion";
+import { Star } from "lucide-react";
 import { useCart } from "../contexts/CartContext";
 import { getPublicDrugs } from "../services/public.api";
 
@@ -8,12 +9,18 @@ const Shop = ({ searchTerm }) => {
   const navigate = useNavigate();
   const { addToCart, setIsCartOpen } = useCart();
   const [params, setParams] = useSearchParams();
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [items, setItems] = useState([]);
   const [meta, setMeta] = useState(null);
   const [categories, setCategories] = useState(["All"]);
 
+  const [priceRange, setPriceRange] = useState([0, 100000]);
+  const [prescriptionOnly, setPrescriptionOnly] = useState(false);
+  const [sort, setSort] = useState("newest");
+
+  /* ================= QUERY ================= */
   const query = useMemo(
     () => ({
       page: Number(params.get("page") || 1),
@@ -23,26 +30,61 @@ const Shop = ({ searchTerm }) => {
     [params, searchTerm]
   );
 
+  /* ================= LOAD ================= */
   const load = async () => {
     try {
       setLoading(true);
       setError("");
+
       const data = await getPublicDrugs({
         page: query.page,
         limit: 12,
         q: query.q || undefined,
-        category: query.category !== "All" ? query.category : undefined,
+        category:
+          query.category !== "All" ? query.category : undefined,
       });
-      const nextItems = data.items || [];
+
+      let nextItems = data.items || [];
+
+      // Price filter
+      nextItems = nextItems.filter(
+        (p) =>
+          Number(p.price) >= priceRange[0] &&
+          Number(p.price) <= priceRange[1]
+      );
+
+      // Prescription filter
+      if (prescriptionOnly) {
+        nextItems = nextItems.filter(
+          (p) => p.prescriptionRequired
+        );
+      }
+
+      // Sorting
+      if (sort === "priceLow") {
+        nextItems.sort((a, b) => a.price - b.price);
+      }
+      if (sort === "priceHigh") {
+        nextItems.sort((a, b) => b.price - a.price);
+      }
+      if (sort === "popular") {
+        nextItems.sort(
+          (a, b) => (b.rating || 0) - (a.rating || 0)
+        );
+      }
+
       setItems(nextItems);
       setMeta(data.meta || null);
+
       const discovered = new Set(["All"]);
       nextItems.forEach((drug) => {
         if (drug.category) discovered.add(drug.category);
       });
       setCategories(Array.from(discovered));
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to load products");
+      setError(
+        err.response?.data?.message || "Failed to load products"
+      );
     } finally {
       setLoading(false);
     }
@@ -50,131 +92,261 @@ const Shop = ({ searchTerm }) => {
 
   useEffect(() => {
     load();
-  }, [query.page, query.q, query.category]);
+  }, [query.page, query.q, query.category, priceRange, prescriptionOnly, sort]);
 
   const updateParams = (updates) => {
     const next = new URLSearchParams(params);
     Object.entries(updates).forEach(([key, value]) => {
-      if (value === undefined || value === null || value === "" || value === "All") next.delete(key);
+      if (!value || value === "All") next.delete(key);
       else next.set(key, String(value));
     });
-    if (updates.page === undefined) next.set("page", "1");
     setParams(next);
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 md:pt-24">
-      <h1 className="text-3xl md:text-5xl font-bold">Shop</h1>
-      <p className="text-gray-600 mt-2">Discover medicines from real pharmacy inventory.</p>
+    <div className="w-full bg-gray-50">
 
-      <div className="bg-white border rounded-xl p-4 mt-6 space-y-3">
-        <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
-          <Search className="w-4 h-4 text-gray-500" />
-          <input
-            value={query.q}
-            onChange={(e) => updateParams({ q: e.target.value, page: 1 })}
-            placeholder="Search medicine"
-            className="w-full outline-none"
-          />
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {categories.map((category) => (
-            <button
-              key={category}
-              onClick={() => updateParams({ category, page: 1 })}
-              className={`px-3 py-1 rounded-full border ${query.category === category ? "bg-black text-white" : ""}`}
+{/* ================= HERO (FULL HEIGHT + ANIMATED) ================= */}
+<section className="relative w-full h-[85vh] md:h-[80vh] overflow-hidden">
+
+  {/* Background Image with subtle zoom */}
+  <motion.img
+    src="/assets/pharmacy-1.jpg"
+    alt="hero"
+    initial={{ scale: 1.1 }}
+    animate={{ scale: 1 }}
+    transition={{ duration: 6, ease: "easeOut" }}
+    className="absolute inset-0 w-full h-full object-cover"
+  />
+
+  {/* Dark overlay */}
+  <div className="absolute inset-0 bg-gradient-to-r from-slate-900/85 via-slate-900/70 to-teal-900/60" />
+
+  <div className="relative z-10 flex flex-col justify-center items-center h-full text-white text-center px-4">
+
+    {/* Animated Tag */}
+    <motion.p
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+      className="uppercase tracking-wider text-sm bg-white/10 backdrop-blur px-4 py-1 rounded-full border border-white/20"
+    >
+      Government Verified Pharmacies • Secure Supply Chain
+    </motion.p>
+
+    {/* Main Title */}
+    <motion.h1
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, delay: 0.2 }}
+      className="mt-6 text-4xl md:text-6xl font-bold max-w-4xl leading-tight"
+    >
+      Your Trusted Digital Marketplace For
+      <span className="text-teal-400"> Authentic Medicines</span>
+    </motion.h1>
+
+    {/* Subtitle */}
+    <motion.p
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, delay: 0.4 }}
+      className="mt-4 max-w-2xl text-slate-200 text-sm md:text-lg"
+    >
+      Compare pharmacies. Check real-time availability.
+      Order with confidence and fast delivery anywhere.
+    </motion.p>
+
+    {/* Animated Search */}
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, delay: 0.6 }}
+      className="mt-8 w-full max-w-2xl flex bg-white rounded-xl overflow-hidden shadow-2xl"
+    >
+      <input
+        value={query.q}
+        onChange={(e) =>
+          updateParams({ q: e.target.value })
+        }
+        placeholder="Search medicines, brands, or symptoms..."
+        className="flex-1 px-5 py-4 text-black outline-none text-sm md:text-base"
+      />
+      <button className="bg-teal-600 px-8 text-white font-medium hover:bg-teal-700 transition">
+        Search
+      </button>
+    </motion.div>
+
+    {/* Trust Badges */}
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 1 }}
+      className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-slate-200"
+    >
+      <span className="bg-white/10 px-4 py-2 rounded-full border border-white/20">
+        ✔ Verified Pharmacies
+      </span>
+      <span className="bg-white/10 px-4 py-2 rounded-full border border-white/20">
+        ✔ Prescription Compliance
+      </span>
+      <span className="bg-white/10 px-4 py-2 rounded-full border border-white/20">
+        ✔ Secure Checkout
+      </span>
+    </motion.div>
+
+    {/* Scroll Indicator */}
+    <motion.div
+      animate={{ y: [0, 10, 0] }}
+      transition={{ repeat: Infinity, duration: 2 }}
+      className="absolute bottom-6 text-sm text-white/70"
+    >
+      ↓ Scroll to browse
+    </motion.div>
+
+  </div>
+</section>
+
+ {/* ================= MAIN CONTENT ================= */}
+      <div className="container mx-auto px-4 py-14 flex gap-10">
+
+        {/* ================= PRODUCTS ================= */}
+        <div className="flex-1">
+
+          {/* HEADER BAR */}
+          <div className="flex justify-between items-center mb-8 bg-white px-6 py-4 rounded-2xl border border-gray-200 shadow-sm">
+            <p className="text-sm text-gray-600">
+              Showing{" "}
+              <span className="font-semibold text-gray-800">
+                {items.length}
+              </span>{" "}
+              products
+            </p>
+
+            <select
+              value={sort}
+              onChange={(e) => setSort(e.target.value)}
+              className="border-gray-300 border-1 rounded-lg px-6 py-2 text-xl text-gray-600 bg-white"
             >
-              {category}
-            </button>
-          ))}
+              <option value="newest">Newest</option>
+              <option value="priceLow">
+                Price: Low to High
+              </option>
+              <option value="priceHigh">
+                Price: High to Low
+              </option>
+              <option value="popular">Most Popular</option>
+            </select>
+          </div>
+
+          {/* PRODUCT GRID */}
+          {!loading && !error && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+              {items.map((product) => (
+                <motion.div
+                  key={product.id}
+                  whileHover={{ y: -6 }}
+                  transition={{ duration: 0.2 }}
+                  className="group bg-white rounded-2xl border border-gray-200 hover:shadow-2xl transition-all duration-300 overflow-hidden"
+                >
+                  <div className="relative overflow-hidden">
+                    <img
+                      src={
+                        product.imageUrl ||
+                        "https://placehold.co/600x400"
+                      }
+                      alt={product.name}
+                      className="w-full h-52 object-cover group-hover:scale-105 transition duration-500"
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = "https://placehold.co/600x400?text=Drug";
+                      }}
+                    />
+
+                    {product.prescriptionRequired && (
+                      <span className="absolute top-4 left-4 bg-red-600 text-white text-xs px-3 py-1 rounded-full shadow">
+                        Prescription Required
+                      </span>
+                    )}
+
+                    <span className="absolute top-4 right-4 bg-emerald-600 text-white text-xs px-3 py-1 rounded-full shadow">
+                      In Stock
+                    </span>
+                  </div>
+
+                  <div className="p-6">
+                    <p className="text-xs text-gray-500">
+                      Sold by{" "}
+                      <span className="font-medium text-gray-700">
+                        {product.Pharmacy?.name ||
+                          "Verified Pharmacy"}
+                      </span>
+                    </p>
+
+                    <h3 className="mt-2 font-semibold text-base line-clamp-1">
+                      {product.name}
+                    </h3>
+
+                    <div className="flex items-center gap-1 mt-2">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          size={14}
+                          className={
+                            i <
+                            Math.round(product.rating || 4)
+                              ? "text-yellow-400 fill-yellow-400"
+                              : "text-gray-300"
+                          }
+                        />
+                      ))}
+                      <span className="text-xs text-gray-500 ml-1">
+                        ({product.rating || 4.0})
+                      </span>
+                    </div>
+
+                    <div className="mt-5 flex items-center justify-between">
+                      <p className="text-lg font-bold text-teal-600">
+                        {Number(product.price).toLocaleString()} FCFA
+                      </p>
+                    </div>
+
+                    <div className="flex gap-3 mt-6">
+                      <button
+                        onClick={() =>
+                          navigate(
+                            `/drug/${product.id}/pharmacies`
+                          )
+                        }
+                        className="flex-1 border-gray-300 border-1 rounded-lg py-2 text-sm hover:bg-gray-50"
+                      >
+                        View
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          addToCart(
+                            {
+                              id: product.id,
+                              name: product.name,
+                              price: Number(product.price),
+                            },
+                            1
+                          );
+                          setIsCartOpen(true);
+                        }}
+                        className="flex-1 bg-teal-600 text-white rounded-lg py-2 text-sm hover:bg-teal-700 transition"
+                      >
+                        Add
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
+
         </div>
       </div>
-
-      {loading && <p className="mt-8">Loading products...</p>}
-
-      {!loading && error && (
-        <div className="mt-8 border border-red-200 bg-red-50 text-red-700 rounded-lg p-4">
-          <p>{error}</p>
-          <button onClick={load} className="underline mt-2">
-            Retry
-          </button>
-        </div>
-      )}
-
-      {!loading && !error && items.length === 0 && (
-        <div className="mt-8 border rounded p-6 bg-white">No products found.</div>
-      )}
-
-      {!loading && !error && items.length > 0 && (
-        <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-8">
-            {items.map((product) => (
-              <div key={product.id} className="bg-white rounded-xl border shadow-sm overflow-hidden">
-                <img
-                  src={product.imageUrl || "https://placehold.co/600x400?text=Drug"}
-                  alt={product.name}
-                  className="w-full h-48 object-cover"
-                />
-                <div className="p-4">
-                  <p className="text-xs bg-gray-100 inline-block px-2 py-1 rounded">{product.category || "General"}</p>
-                  <h3 className="font-semibold text-lg mt-2">{product.name}</h3>
-                  <p className="text-sm text-gray-600 line-clamp-2">{product.description || "No description available."}</p>
-                  <p className="text-teal-600 font-bold mt-3">{Number(product.price).toLocaleString()} FCFA</p>
-                  <div className="flex gap-2 mt-3">
-                    <button
-                      onClick={() => navigate(`/drug/${product.id}/pharmacies`)}
-                      className="flex-1 border rounded py-2"
-                    >
-                      View
-                    </button>
-                    <button
-                      onClick={() => {
-                        addToCart(
-                          {
-                            id: product.id,
-                            name: product.name,
-                            price: Number(product.price),
-                            src: product.imageUrl || "https://placehold.co/600x400?text=Drug",
-                            category: product.category || "General",
-                            prescriptionRequired: Boolean(product.prescriptionRequired),
-                            pharmacyId: product.pharmacyId,
-                            pharmacyName: product.Pharmacy?.name,
-                          },
-                          1
-                        );
-                        setIsCartOpen(true);
-                      }}
-                      className="flex-1 bg-teal-600 text-white rounded py-2"
-                    >
-                      Add
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-8 flex items-center justify-between">
-            <button
-              disabled={!meta?.hasPrev}
-              onClick={() => updateParams({ page: Math.max(1, query.page - 1) })}
-              className="px-4 py-2 border rounded disabled:opacity-50"
-            >
-              Previous
-            </button>
-            <p>
-              Page {meta?.page || 1} of {meta?.totalPages || 1}
-            </p>
-            <button
-              disabled={!meta?.hasNext}
-              onClick={() => updateParams({ page: query.page + 1 })}
-              className="px-4 py-2 border rounded disabled:opacity-50"
-            >
-              Next
-            </button>
-          </div>
-        </>
-      )}
     </div>
   );
 };

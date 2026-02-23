@@ -3,7 +3,7 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import CartPage from "./UI/CartPage";
 import { Phone, MessageCircle } from "lucide-react";
 import { 
-  FaBars, FaTimes, FaPlus, FaShoppingCart, FaUser, 
+  FaBars, FaTimes, FaPlus, FaShoppingCart, FaUser,
   FaHome, FaStore, FaPrescriptionBottle, FaStethoscope, 
   FaInfoCircle, FaEnvelope 
 } from "react-icons/fa";
@@ -89,13 +89,7 @@ const Header = () => {
               <span>Dashboard</span>
             </Link>
           )}
-
-          {!isLoggedIn ? (
-            <Link to="/register" className="hidden md:flex items-center gap-2">
-              <FaUser />
-              <span className="text-xl font-medium">Account</span>
-            </Link>
-          ) : (
+          {isLoggedIn && (
             <button
               onClick={handleLogout}
               className="hidden md:flex items-center gap-2 text-xl font-medium"

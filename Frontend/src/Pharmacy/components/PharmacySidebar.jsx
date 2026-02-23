@@ -1,10 +1,11 @@
-import { LayoutDashboard, ShoppingCart, Package, Store, X } from "lucide-react";
+import { LayoutDashboard, ShoppingCart, Package, Store, FileCheck2, X } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 const navItems = [
   { name: "Overview", icon: LayoutDashboard, path: "/pharmacy" },
   { name: "Orders", icon: ShoppingCart, path: "/pharmacy/orders" },
   { name: "Drugs", icon: Package, path: "/pharmacy/drugs" },
+  { name: "Prescriptions", icon: FileCheck2, path: "/pharmacy/prescriptions" },
   { name: "Profile", icon: Store, path: "/pharmacy/profile" },
 ];
 

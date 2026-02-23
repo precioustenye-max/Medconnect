@@ -29,7 +29,7 @@ const Input = ({
         required={required}
         value={value}        // ✅ controlled input
         onChange={onChange}  // ✅ CRITICAL
-        className="w-full px-4 py-3 border border-gray-300 rounded-md"
+        className="w-full px-4 py-2 border border-gray-300 rounded-md text-sm"
         {...rest}
       />
     </div>

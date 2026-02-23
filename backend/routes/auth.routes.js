@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { registerUser, loginUser, logoutUser, getCurrentUser } = require("../controllers/auth.controller");
+const { registerUser, loginUser, googleLogin, logoutUser, getCurrentUser } = require("../controllers/auth.controller");
 const { verifyToken } = require("../middleware/auth.middleware");
 
 // POST /api/auth/register
@@ -8,6 +8,9 @@ router.post("/register", registerUser);
 
 // POST /api/auth/login
 router.post("/login", loginUser);
+
+// POST /api/auth/google
+router.post("/google", googleLogin);
 
 // POST /api/auth/logout
 router.post("/logout", logoutUser);

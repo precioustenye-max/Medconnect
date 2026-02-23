@@ -1,8 +1,61 @@
 const { Drug, Pharmacy } = require("../models");
+const fs = require("fs/promises");
+const path = require("path");
 
 const getAuthPharmacy = async (user) => {
   if (!user || !user.pharmacyId) return null;
   return Pharmacy.findByPk(user.pharmacyId);
+};
+
+const uploadDir = path.join(__dirname, "..", "uploads", "drugs");
+
+const imageExtensionByMime = {
+  "image/jpeg": "jpg",
+  "image/jpg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+  "image/gif": "gif",
+};
+
+const toAbsoluteUploadUrl = (req, relativePath) => {
+  const base = `${req.protocol}://${req.get("host")}`;
+  return `${base}${relativePath}`;
+};
+
+const persistDataUrlImageIfNeeded = async (req, value) => {
+  if (!value || typeof value !== "string") return null;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+
+  // If this is already a normal URL/path, keep it as-is.
+  if (!trimmed.startsWith("data:image/")) {
+    return trimmed;
+  }
+
+  const match = trimmed.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/);
+  if (!match) {
+    throw new Error("Invalid image format");
+  }
+
+  const mime = match[1];
+  const base64Data = match[2];
+  const ext = imageExtensionByMime[mime];
+  if (!ext) {
+    throw new Error("Unsupported image type. Use JPG, PNG, WEBP, or GIF.");
+  }
+
+  const buffer = Buffer.from(base64Data, "base64");
+  if (!buffer?.length) {
+    throw new Error("Invalid image payload");
+  }
+
+  await fs.mkdir(uploadDir, { recursive: true });
+  const filename = `${Date.now()}-${Math.round(Math.random() * 1e9)}.${ext}`;
+  const filePath = path.join(uploadDir, filename);
+  await fs.writeFile(filePath, buffer);
+
+  const relativeUrl = `/uploads/drugs/${filename}`;
+  return toAbsoluteUploadUrl(req, relativeUrl);
 };
 
 const parseDrugPayload = (body, { partial = false } = {}) => {
@@ -57,6 +110,10 @@ exports.addDrug = async (req, res) => {
     }
 
     const payload = parseDrugPayload(req.body);
+    if (payload.imageUrl !== undefined) {
+      payload.imageUrl = await persistDataUrlImageIfNeeded(req, payload.imageUrl);
+    }
+
     const drug = await Drug.create({
       ...payload,
       pharmacyId: pharmacy.id,
@@ -106,6 +163,10 @@ exports.updateDrug = async (req, res) => {
     }
 
     const payload = parseDrugPayload(req.body, { partial: true });
+    if (payload.imageUrl !== undefined) {
+      payload.imageUrl = await persistDataUrlImageIfNeeded(req, payload.imageUrl);
+    }
+
     await drug.update(payload);
     return res.json(drug);
   } catch (error) {

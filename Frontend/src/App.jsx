@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
+
+<Toaster position="top-right" />
+
 
 import MainLayout from "./layouts/MainLayout";
 import AuthLayout from "./layouts/AuthLayout";
@@ -22,11 +26,13 @@ import PharmacyOverview from "./Pharmacy/pages/Overview";
 import PharmacyOrders from "./Pharmacy/pages/Orders";
 import PharmacyDrugsPage from "./Pharmacy/pages/Drugs";
 import PharmacyProfile from "./Pharmacy/pages/Profile";
+import PharmacyPrescriptions from "./Pharmacy/pages/Prescriptions";
 
 /* Admin System */
 import AdminLayout from "./Admin/layouts/AdminLayout";
 import Dashboard from "./Admin/pages/Dashboard";
 import Users from "./Admin/pages/Users";
+import PharmacyProducts from "./Admin/pages/PharmacyProduct";
 
 /* ===== Context ===== */
 import { CartProvider } from "./contexts/CartContext";
@@ -43,7 +49,6 @@ function App() {
   return (
     <CartProvider>
       <Routes>
-
         {/* AUTH ROUTES  */}
         <Route element={<AuthLayout />}>
           <Route path="/register" element={<Register />} />
@@ -53,10 +58,12 @@ function App() {
         {/*  MAIN SITE ROUTES  */}
         <Route
           element={
-            <MainLayout
-              searchTerm={searchTerm}
-              onSearch={setSearchTerm}
-            />
+            <RequireRole>
+              <MainLayout
+                searchTerm={searchTerm}
+                onSearch={setSearchTerm}
+              />
+            </RequireRole>
           }
         >
           <Route path="/" element={<HomePage searchTerm={searchTerm} />} />
@@ -68,22 +75,23 @@ function App() {
           <Route path="/pharmacies" element={<Pharmacies />} />
           <Route path="/pharmacy/:id/drugs" element={<PharmacyDrugs />} />
           <Route path="/drug/:drugId/pharmacies" element={<DrugPharmacies />} />
-         
         </Route>
 
- <Route
-            path="/pharmacy"
-            element={
-              <RequireRole role="pharmacy">
-                <PharmacyLayout />
-              </RequireRole>
-            }
-          >
-            <Route index element={<PharmacyOverview />} />
-            <Route path="orders" element={<PharmacyOrders />} />
-            <Route path="drugs" element={<PharmacyDrugsPage />} />
-            <Route path="profile" element={<PharmacyProfile />} />
-          </Route>
+        <Route
+          path="/pharmacy"
+          element={
+            <RequireRole role="pharmacy">
+              <PharmacyLayout />
+            </RequireRole>
+          }
+        >
+          <Route index element={<PharmacyOverview />} />
+          <Route path="orders" element={<PharmacyOrders />} />
+          <Route path="drugs" element={<PharmacyDrugsPage />} />
+          <Route path="prescriptions" element={<PharmacyPrescriptions />} />
+          <Route path="profile" element={<PharmacyProfile />} />
+        </Route>
+
         {/* ================= ADMIN ROUTES ================= */}
         <Route
           path="/admin"
@@ -95,8 +103,8 @@ function App() {
         >
           <Route index element={<Dashboard />} />
           <Route path="users" element={<Users />} />
+          <Route path="pharmacies" element={<PharmacyProducts />} />
         </Route>
-
       </Routes>
     </CartProvider>
   );

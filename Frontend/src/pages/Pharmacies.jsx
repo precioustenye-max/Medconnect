@@ -144,7 +144,7 @@ const Pharmacies = () => {
   }
 
   return (
-    <main className="w-full mt-0 md:mt-20 overflow-hidden">
+    <main className="w-full mt-0 md:mt-10 overflow-hidden">
 
       {/*  HERO */}
       <section className="relative h-[80vh] w-full flex items-center justify-center">
@@ -250,7 +250,7 @@ const Pharmacies = () => {
       </div>
 
       {/*  GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-14 px-4 md:px-10">
+      <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-14 px-4 md:px-10">
         {processed.map((pharmacy) => (
           <motion.div
             key={pharmacy.id}

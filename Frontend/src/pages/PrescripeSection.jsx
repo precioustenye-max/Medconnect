@@ -1,100 +1,200 @@
-import React  from "react";
-import { useState, useMemo } from "react";
-import { FaUpload,FaImage,FaCloudUploadAlt } from "react-icons/fa";
-import { Upload, FileText, CheckCircle, Clock, X, Download } from 'lucide-react';
-import ImageUpload from "../Components/UI/ImageUpload";
+import { useEffect, useState } from "react";
+import { createPrescription } from "../services/prescription.api";
+import { getPublicPharmacies } from "../services/public.api";
 
-const PrescripeSection = () =>{
-    return(
-        <section className="mt-10 bg-white mb-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 space-x-3 my-2">
+const initialForm = {
+  pharmacyId: "",
+  drugName: "",
+  patientName: "",
+  doctorName: "",
+  notes: "",
+};
 
+const PrescripeSection = () => {
+  const [form, setForm] = useState(initialForm);
+  const [documentDataUrl, setDocumentDataUrl] = useState("");
+  const [documentName, setDocumentName] = useState("");
+  const [pharmacies, setPharmacies] = useState([]);
+  const [loadingPharmacies, setLoadingPharmacies] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
 
-                  <button className=" gap-3 border-1 border-gray-300 p-5 rounded-lg  text-gray-700 shadow-md">
-                    <div className="flex items-center gap-2">
-                          <Upload className="w-5 h-5" />
-                        <h2 className="text-2xl">Upload Your Prescription</h2>
-                    </div>
-                    <ImageUpload />
-        <div className=" space-y-3 mt-5 ">
-        <div className="flex flex-col items-start">
-        <span className="text-gray-800 font-semibold text-xl">Patient Name</span>
-        <input type="text"
-        placeholder="Enter Patients Name " 
-        className="bg-gray-100 w-full  py-4 text-xl rounded-2xl px-2"/>
+  useEffect(() => {
+    const load = async () => {
+      try {
+        setLoadingPharmacies(true);
+        const data = await getPublicPharmacies({ page: 1, limit: 100, sort: "name" });
+        setPharmacies(data.items || []);
+      } catch (err) {
+        setError(err.response?.data?.message || "Failed to load pharmacies");
+      } finally {
+        setLoadingPharmacies(false);
+      }
+    };
+
+    load();
+  }, []);
+
+  const onChange = (key, value) => {
+    setForm((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const onPickDocument = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Keep uploads lightweight for current base64 storage approach.
+    if (file.size > 5 * 1024 * 1024) {
+      setError("Please choose a file smaller than 5MB.");
+      return;
+    }
+
+    setError("");
+    setDocumentName(file.name);
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = typeof reader.result === "string" ? reader.result : "";
+      setDocumentDataUrl(result);
+    };
+    reader.onerror = () => {
+      setError("Failed to read file. Please try another image.");
+      setDocumentDataUrl("");
+      setDocumentName("");
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setMessage("");
+
+    try {
+      setSubmitting(true);
+      const payload = {
+        pharmacyId: Number(form.pharmacyId),
+        drugName: form.drugName,
+        patientName: form.patientName,
+        doctorName: form.doctorName,
+        documentUrl: documentDataUrl || undefined,
+        notes: form.notes || undefined,
+      };
+      await createPrescription(payload);
+      setMessage("Prescription submitted successfully. A pharmacy will review it.");
+      setForm(initialForm);
+      setDocumentDataUrl("");
+      setDocumentName("");
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to submit prescription");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <section className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 md:p-8">
+      <h3 className="text-2xl font-semibold text-gray-900">Upload Prescription</h3>
+      <p className="text-gray-600 mt-1">Submit prescription details for pharmacy verification.</p>
+
+      <form onSubmit={onSubmit} className="mt-6 space-y-4">
+        <div>
+          <label className="block text-base font-medium text-gray-700 mb-1">Target Pharmacy</label>
+          <select
+            value={form.pharmacyId}
+            onChange={(e) => onChange("pharmacyId", e.target.value)}
+            disabled={loadingPharmacies}
+            className="w-full border border-gray-300 text-gray-600 font-medium rounded-lg px-3 py-2"
+            required
+          >
+            <option value="">{loadingPharmacies ? "Loading pharmacies..." : "Select pharmacy"}</option>
+            {pharmacies.map((pharmacy) => (
+              <option key={pharmacy.id} value={pharmacy.id}>
+                {pharmacy.name} - {pharmacy.location}
+              </option>
+            ))}
+          </select>
         </div>
-     <div className="flex flex-col items-start">
-        <span className="text-black font-semibold text-xl text-gray-800">Prescribing Doctor</span>
-        <input type="text" 
-         className="bg-gray-100 w-full py-4 text-xl rounded-2xl px-2 "
-         placeholder="Doctor's Name"/>
-         </div>
-      <div className="flex flex-col items-start">
-        <span className="text-black font-semibold text-xl text-gray-800">Additional Notes(Optional)</span>
-        <textarea type="text"
-         className="bg-gray-100 w-full py-4 rounded-2xl text-base px-2"
-         placeholder="Any spacial Instructions or describe your sickness " />
-         </div>
-      </div>
 
-      <button className="bg-gray-900  w-full py-3 mt-6 rounded-2xl text-white md:text-xl text-base">Submit Prescription</button>
-                  </button>
+        <div className="grid md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-base font-medium text-gray-700 mb-1">Medication Name</label>
+            <input
+              value={form.drugName}
+              onChange={(e) => onChange("drugName", e.target.value)}
+              className="w-full border-1 border-gray-300  border-gray-300 rounded-lg px-3 py-2"
+              placeholder="e.g. Amoxicillin 500mg"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Patient Name</label>
+            <input
+              value={form.patientName}
+              onChange={(e) => onChange("patientName", e.target.value)}
+              className="w-full border-1 border-gray-300  border-gray-300 rounded-lg px-3 py-2"
+              required
+            />
+          </div>
+        </div>
 
+        <div className="grid md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-base font-medium text-gray-700 mb-1">Prescribing Doctor</label>
+            <input
+              value={form.doctorName}
+              onChange={(e) => onChange("doctorName", e.target.value)}
+              className="w-full border-1 border-gray-300  border-gray-300 rounded-lg px-3 py-2"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-base font-medium text-gray-700 mb-1">Upload Prescription Image</label>
+            <label className="w-full border-2 border-dashed border-gray-300 rounded-lg px-3 py-3 flex items-center justify-center text-sm text-gray-700 cursor-pointer hover:border-teal-400">
+              <input type="file" accept="image/*,.pdf" className="hidden" onChange={onPickDocument} />
+              {documentName ? `Selected: ${documentName}` : "Choose file from phone/computer"}
+            </label>
+          </div>
+        </div>
 
-                  {/* card 2 */}
+        {documentDataUrl && (
+          <div className="border rounded-lg p-3 bg-gray-50">
+            <p className="text-sm text-gray-600 mb-2">Preview</p>
+            {documentDataUrl.startsWith("data:application/pdf") ? (
+              <a href={documentDataUrl} target="_blank" rel="noreferrer" className="text-sm text-teal-700 underline">
+                Open uploaded PDF
+              </a>
+            ) : (
+              <img src={documentDataUrl} alt="Prescription preview" className="max-h-52 rounded border" />
+            )}
+          </div>
+        )}
 
-                  <div className="space-y-3">
-                  <div className="border-1 border-gray-300 rounded-lg shadow-md py-10 p-5 px-7 text-gray-800">
-                    <div>
-                        <h2 className="text-3xl capitalize">Important information</h2>
+        <div>
+          <label className="block text-base font-medium text-gray-700 mb-1">Notes (optional)</label>
+          <textarea
+            value={form.notes}
+            onChange={(e) => onChange("notes", e.target.value)}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2"
+            rows={4}
+            placeholder="Add any context for the pharmacy"
+          />
+        </div>
 
-                          <div className="mt-6 space-y-1">
-                           <div className="flex items-center gap-4">
-                            <CheckCircle className="text-green-600 w-6 h-6"/>
-                            <h3 className="text-2xl text-gray-800 capitalize ">Validate Prescription required</h3>
-                            </div>
-                            <p className="text-gray-700 ml-11">Prescription must be current and signed by a licensed physician</p>
-                        </div>
+        {error && <p className="text-sm text-red-600">{error}</p>}
+        {message && <p className="text-sm text-green-700">{message}</p>}
 
-                             <div className="mt-6 space-y-1">
-                                <div className="flex items-center gap-4">
-                                    <CheckCircle className="text-green-600 w-6 h-6"/>
-                            <h3 className="text-2xl text-gray-800 capitalize ">Validate Process</h3>
-                                </div>
-                            <p className="text-gray-700 ml-11">Prescription must be current and signed by a licensed physician</p>
-                        </div>
-
-                             <div className="mt-6 space-y-1">
-                                <div className="flex items-center gap-4">
-                                    <CheckCircle className="text-green-600 w-6 h-6"/>
-                            <h3 className="text-2xl text-gray-800 capitalize ">secure & confidencial</h3>
-                                </div>
-                            <p className="text-gray-700 ml-11">All prescriptions are stored securely and handled with privacy</p>
-                        </div>
-
-                             <div className="mt-6 space-y-1">
-                                <div className="flex items-center gap-4">
-                                    <CheckCircle className="text-green-600 w-6 h-6"/>
-                            <h3 className="text-2xl text-gray-800 capitalize ">Automatic Refils available</h3>
-                                </div>
-                            <p className="text-gray-700 ml-11">Set up automatic refills for your recurring medications</p>
-                        </div>
-                    </div>
-                  </div>
-                    
-                    <div className="bg-blue-50 p-5  rounded-lg shadow-md border-1 border-blue-200">
-                        <h2 className="text-blue-700 text-2xl">Need help?</h2>
-                        <p className="text-base md:text-xl text-blue-500 py-2">Our pharmacists are available 24/7 to assist with your prescription needs</p>
-
-                        <button className="bg-white w-full mt-3 py-3 rounded-2xl text-xl border-1 border-gray-200 hover:bg-gray-200">Contact Support</button>
-                    </div>
-
-                  </div>
-
-            </div>
-        </section>
-
-    )
-}
+        <button
+          type="submit"
+          disabled={submitting}
+          className="bg-teal-600 text-white px-5 py-2.5 text-lge rounded-lg disabled:opacity-60"
+        >
+          {submitting ? "Submitting..." : "Submit Prescription"}
+        </button>
+      </form>
+    </section>
+  );
+};
 
 export default PrescripeSection;

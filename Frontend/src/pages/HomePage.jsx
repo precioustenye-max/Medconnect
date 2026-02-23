@@ -13,136 +13,121 @@ import {
   CheckCircle,
 } from "lucide-react";
 
-/* ================= STRONGER ANIMATION VARIANTS ================= */
-
+/* STRONGER ANIMATION VARIANTS */
 const hardFadeUp = {
-  hidden: {
-    opacity: 0,
-    y: 100,
-    scale: 0.92,
-  },
+  hidden: { opacity: 0, y: 100, scale: 0.92 },
   visible: {
     opacity: 1,
     y: 0,
     scale: 1,
-    transition: {
-      type: "spring",
-      stiffness: 90,
-      damping: 18,
-      mass: 0.8,
-    },
+    transition: { type: "spring", stiffness: 90, damping: 18, mass: 0.8 },
   },
 };
 
 const hardImage = {
-  hidden: {
-    opacity: 0,
-    y: 120,
-    scale: 0.9,
-    rotate: -2,
-  },
+  hidden: { opacity: 0, y: 120, scale: 0.9, rotate: -2 },
   visible: {
     opacity: 1,
     y: 0,
     scale: 1,
     rotate: 0,
-    transition: {
-      type: "spring",
-      stiffness: 70,
-      damping: 16,
-    },
+    transition: { type: "spring", stiffness: 70, damping: 16 },
   },
 };
 
 const staggerHard = {
   hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.22,
-      delayChildren: 0.1,
-    },
-  },
+  visible: { transition: { staggerChildren: 0.22, delayChildren: 0.1 } },
 };
 
-/* ================= MAIN PAGE ================= */
-
+/*  MAIN PAGE  */
 function HomePage({ searchTerm }) {
   return (
-    <main className="container mx-auto flex flex-col overflow-none mt-10">
-
+    <main className="flex flex-col overflow-hidden">
       {/* ================= HERO ================= */}
-      <section className="relative md:py-16 overflow-hidden">
+      <section className="relative w-full min-h-[90vh] flex items-center justify-center overflow-hidden">
+        {/* Background Image */}
+        <motion.img
+          src="/assets/Pharmacist.jpg"
+          alt="Pharmacist"
+          initial={{ scale: 1.1 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 6, ease: "easeOut" }}
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-900/75 to-teal-900/70" />
+
+        {/* Hero Content */}
         <motion.div
-          className="mx-auto px-6"
+          className="relative z-10 container mx-auto px-6 flex flex-col items-center justify-center text-center"
           variants={staggerHard}
           initial="hidden"
           animate="visible"
         >
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-
-            <motion.div variants={hardFadeUp} className="space-y-6 md:mt-10">
-              <motion.div
-                variants={hardFadeUp}
-                className="inline-block px-4 py-2 bg-teal-600 text-white rounded-full text-sm md:text-xl"
-              >
-                Trusted by over 5,000 customers
-              </motion.div>
-
-              <motion.h2
-                variants={hardFadeUp}
-                className="text-4xl md:text-7xl text-gray-900"
-              >
-                Your Health Our Priority
-              </motion.h2>
-
-              <motion.p
-                variants={hardFadeUp}
-                className="text-gray-600 text-base md:text-3xl"
-              >
-                Order prescription medications and health products online with fast,
-                reliable delivery.
-              </motion.p>
-
-              <motion.div
-                variants={hardFadeUp}
-                className="flex flex-col md:flex-row gap-4"
-              >
-                <Button to="/shop" color="black">Shop Now</Button>
-                <Button to="/prescription" color="white">Upload Prescription</Button>
-              </motion.div>
-
-              <motion.div
-                variants={staggerHard}
-                className="flex justify-between gap-6 pt-8"
-              >
-                <motion.div variants={hardFadeUp}>
-                  <HeroIcon icon={<FaTruck />} label="Fast Delivery" />
-                </motion.div>
-                <motion.div variants={hardFadeUp}>
-                  <HeroIcon icon={<FaShieldAlt />} label="Secure & Safe" />
-                </motion.div>
-                <motion.div variants={hardFadeUp}>
-                  <HeroIcon icon={<FaTimesCircle />} label="Easy Returns" />
-                </motion.div>
-              </motion.div>
+          <div className="max-w-4xl space-y-8 text-white">
+            {/* Badge */}
+            <motion.div
+              variants={hardFadeUp}
+              className="inline-flex items-center gap-2 px-5 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-sm tracking-wide"
+            >
+              <ShieldCheck size={16} />
+              Trusted by 5,000+ Customers
             </motion.div>
 
-            <motion.div
-              variants={hardImage}
-              className="hidden md:block"
+            {/* Heading */}
+            <motion.h1
+              variants={hardFadeUp}
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight"
             >
-              <img
-                src="/assets/Pharmacist.jpg"
-                alt="Pharmacist"
-                className="rounded-xl shadow-lg"
-              />
+              Smart Pharmacy <br />
+              <span className="text-teal-400">Comparison & Ordering</span>
+            </motion.h1>
+
+            {/* Subtext */}
+            <motion.p
+              variants={hardFadeUp}
+              className="text-slate-200 text-lg md:text-xl max-w-2xl mx-auto"
+            >
+              Compare prices, check availability, and order medications securely
+              from verified pharmacies near you — all in one place.
+            </motion.p>
+
+            {/* CTA Buttons */}
+            <motion.div
+              variants={hardFadeUp}
+              className="flex flex-col sm:flex-row gap-4 justify-center"
+            >
+              <Button to="/shop" color="black">
+                Browse Medications
+              </Button>
+              <Button to="/prescription" color="white">
+                Upload Prescription
+              </Button>
+            </motion.div>
+
+            {/* Feature Icons */}
+            <motion.div
+              variants={staggerHard}
+              className="flex flex-wrap gap-8 pt-6 justify-center"
+            >
+              <motion.div variants={hardFadeUp}>
+                <HeroIcon icon={<FaTruck />} label="Fast Delivery" />
+              </motion.div>
+              <motion.div variants={hardFadeUp}>
+                <HeroIcon icon={<FaShieldAlt />} label="Secure Payments" />
+              </motion.div>
+              <motion.div variants={hardFadeUp}>
+                <HeroIcon icon={<FaTimesCircle />} label="Easy Returns" />
+              </motion.div>
             </motion.div>
           </div>
         </motion.div>
       </section>
 
       {/* ================= PRODUCTS ================= */}
-      <ProductSection searchTerm={searchTerm} />
+      <ProductSection searchTerm={searchTerm} className="py-16 container mx-auto" />
 
       {/* ================= WHY CHOOSE ================= */}
       <section className="py-24 px-6 container mx-auto text-center">
@@ -163,7 +148,8 @@ function HomePage({ searchTerm }) {
           viewport={{ once: true, margin: "-120px" }}
           className="text-gray-600 max-w-3xl mx-auto mb-16 text-xl"
         >
-          A complete pharmacy solution built on trust, transparency, and convenience.
+          A complete pharmacy solution built on trust, transparency, and
+          convenience.
         </motion.p>
 
         <motion.div
@@ -173,12 +159,36 @@ function HomePage({ searchTerm }) {
           viewport={{ once: true, margin: "-120px" }}
           className="grid md:grid-cols-3 gap-8 text-left"
         >
-          <FeatureCard icon={<ShieldCheck />} title="Verified Pharmacies" desc="All pharmacies are licensed and audited." />
-          <FeatureCard icon={<DollarSign />} title="Price Comparison" desc="Compare prices instantly across pharmacies." />
-          <FeatureCard icon={<MapPin />} title="Easy Location Access" desc="Find nearby pharmacies with real-time stock." />
-          <FeatureCard icon={<ShoppingCart />} title="Online Purchasing" desc="Secure online checkout and ordering." />
-          <FeatureCard icon={<Clock />} title="24/7 Availability" desc="Access services anytime, anywhere." />
-          <FeatureCard icon={<Star />} title="Quality Assurance" desc="Authentic medications guaranteed." />
+          <FeatureCard
+            icon={<ShieldCheck />}
+            title="Verified Pharmacies"
+            desc="All pharmacies are licensed and audited."
+          />
+          <FeatureCard
+            icon={<DollarSign />}
+            title="Price Comparison"
+            desc="Compare prices instantly across pharmacies."
+          />
+          <FeatureCard
+            icon={<MapPin />}
+            title="Easy Location Access"
+            desc="Find nearby pharmacies with real-time stock."
+          />
+          <FeatureCard
+            icon={<ShoppingCart />}
+            title="Online Purchasing"
+            desc="Secure online checkout and ordering."
+          />
+          <FeatureCard
+            icon={<Clock />}
+            title="24/7 Availability"
+            desc="Access services anytime, anywhere."
+          />
+          <FeatureCard
+            icon={<Star />}
+            title="Quality Assurance"
+            desc="Authentic medications guaranteed."
+          />
         </motion.div>
       </section>
 
@@ -273,7 +283,6 @@ function HomePage({ searchTerm }) {
           />
         </motion.div>
       </section>
-
     </main>
   );
 }
@@ -281,7 +290,6 @@ function HomePage({ searchTerm }) {
 export default HomePage;
 
 /* ================= HELPERS ================= */
-
 function HeroIcon({ icon, label }) {
   return (
     <div className="flex flex-col items-center">
@@ -319,4 +327,3 @@ function Step({ num, title, desc }) {
     </li>
   );
 }
-

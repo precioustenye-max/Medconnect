@@ -5,6 +5,7 @@ import {
 
 
 const ProductCard = ({ product, onClick, onAddToCart }) => {
+  const fallbackImage = "https://placehold.co/600x400?text=Drug";
   return (
     <div
       onClick={onClick}
@@ -19,9 +20,13 @@ const ProductCard = ({ product, onClick, onAddToCart }) => {
       aria-label={`View details for ${product.name}`}
     >
       <img
-        src={product.src}
+        src={product.src || fallbackImage}
         alt={product.alt || product.name}
         className="w-full h-48 object-cover mb-4 rounded" 
+        onError={(e) => {
+          e.currentTarget.onerror = null;
+          e.currentTarget.src = fallbackImage;
+        }}
       />
 
       <div className="p-4">
