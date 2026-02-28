@@ -1,8 +1,5 @@
 import { useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
-import { Toaster } from "react-hot-toast";
-
-<Toaster position="top-right" />
 
 
 import MainLayout from "./layouts/MainLayout";

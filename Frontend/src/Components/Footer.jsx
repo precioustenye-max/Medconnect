@@ -1,174 +1,129 @@
 import React from "react";
-import {
-    FaPlus,
-    FaFacebook,
-    FaWhatsapp,
-    FaLinkedin
-} from "react-icons/fa"
 import { Link, NavLink } from "react-router-dom";
+import {
+  FaPlus,
+  FaFacebook,
+  FaWhatsapp,
+  FaLinkedin,
+  FaMapMarkerAlt,
+  FaPhone,
+  FaEnvelope,
+} from "react-icons/fa";
 
-const navItems = [
-  { label: "About", path: "/" },
-  { label: "Contact", path: "/shop" },
-  { label: "FAQs", path: "/FAQs" },
-  { label: "Prescription Refills", path: "/Prescription Refills" },
-  { label: "Health Resources", path: "/Health Resource" }
-];
-const CustomerSevice = [
-{ label: "Shipping Information", path: "/" },
-{ label: "Returns & Refunds", path: "/Returns" },
-{ label: "Privacy Policy", path: "/Privacy Policy" },
-{ label: "Terms & Conditions", path: "/Terms & Conditions" },
-{ label: "Tract Your Order", path: "/Tract Your Order" }
-];
-
-const ContactUs = [
-{ label: "Shipping Information", path: "/" },
-{ label: "Returns & Refunds", path: "/Returns" },
-{ label: "Privacy Policy", path: "/Privacy Policy" },
-{ label: "Terms & Conditions", path: "/Terms & Conditions" },
-{ label: "Tract Your Order", path: "/Tract Your Order" }
+const quickLinks = [
+  { label: "Home", path: "/" },
+  { label: "Shop Medications", path: "/shop" },
+  { label: "Find Pharmacies", path: "/pharmacies" },
+  { label: "Upload Prescription", path: "/prescription" },
+  { label: "Health Services", path: "/healthservice" },
 ];
 
+const companyLinks = [
+  { label: "About Us", path: "/about" },
+  { label: "Contact", path: "/contact" },
+  { label: "Account Registration", path: "/register" },
+  { label: "Customer Login", path: "/login" },
+];
 
- const linkClass = ({ isActive }) =>
-    `font-semibold text-xl transition-colors ${
-      isActive
-        ? "text-gray-600"
-          : "text-gray-600 hover:text-teal-600"
-    }`;
+const linkClass = ({ isActive }) =>
+  `text-sm transition-colors ${
+    isActive ? "text-white" : "text-slate-300 hover:text-teal-300"
+  }`;
 
+const Footer = () => {
+  const currentYear = new Date().getFullYear();
 
-const Footer = ()=> {
-    return(
-        <footer className="bg-gray-900 text-white px-4  ">
-            <div className="flex  px-4 md:px-6  space-x-7 py-10 space-y-6
-            grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 
-            border-b-1 border-gray-800
-             ">
-
-            <div className="" >
-              <Link to="/" className=" md:flex flex items-center gap-3">
-          <div className="w-8 h-8 md:w-10 md:h-10 bg-teal-600 rounded-lg flex items-center justify-center text-white">
-            <FaPlus />
-          </div>
+  return (
+    <footer className="bg-slate-950 text-white">
+      <div className="container mx-auto px-4 py-12">
+        <div className="grid gap-10 border-b border-slate-800 pb-10 sm:grid-cols-2 lg:grid-cols-4">
           <div>
-            <h1 className="text-xl md:text-2xl md:flex font-semibold text-white">
-              MedConnect
-            </h1>
-        
+            <Link to="/" className="inline-flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-teal-600 text-white">
+                <FaPlus />
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold">MedConnect</h2>
+                <p className="text-xs text-slate-400">Professional pharmacy marketplace</p>
+              </div>
+            </Link>
+            <p className="mt-4 max-w-xs text-sm leading-6 text-slate-300">
+              Compare trusted pharmacies, upload prescriptions, and order medications with
+              secure checkout and reliable support.
+            </p>
+            <div className="mt-5 flex items-center gap-4 text-xl text-slate-300">
+              <a href="#" aria-label="Facebook" className="transition hover:text-teal-300">
+                <FaFacebook />
+              </a>
+              <a href="#" aria-label="WhatsApp" className="transition hover:text-teal-300">
+                <FaWhatsapp />
+              </a>
+              <a href="#" aria-label="LinkedIn" className="transition hover:text-teal-300">
+                <FaLinkedin />
+              </a>
+            </div>
           </div>
-        </Link>
-            <p className="text-sm  md:flex text-gray-400 md:text-base mt-5">
-              Your trusted partner in healthcare, providing quality
-               medications and health products with 
-              exceptional service.
-            </ p>
 
-         <button className="flex gap-2 space-x-2 items-center justify-center mt-6">
-            <FaFacebook className="text-xl " />
-            <FaWhatsapp className="text-xl" />
-            <FaLinkedin className="text-xl"/>
-         </button>
+          <div>
+            <h3 className="text-lg font-semibold">Quick Links</h3>
+            <ul className="mt-4 space-y-2">
+              {quickLinks.map((item) => (
+                <li key={item.path}>
+                  <NavLink to={item.path} className={linkClass}>
+                    {item.label}
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="text-lg font-semibold">Company</h3>
+            <ul className="mt-4 space-y-2">
+              {companyLinks.map((item) => (
+                <li key={item.path}>
+                  <NavLink to={item.path} className={linkClass}>
+                    {item.label}
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="text-lg font-semibold">Contact</h3>
+            <ul className="mt-4 space-y-3 text-sm text-slate-300">
+              <li className="flex items-start gap-2">
+                <FaMapMarkerAlt className="mt-1 shrink-0" />
+                120 Health Avenue, Suite 8, Boston, MA
+              </li>
+              <li className="flex items-center gap-2">
+                <FaPhone />
+                <a href="tel:+1654471272" className="transition hover:text-teal-300">
+                  +1 (654) 471-272
+                </a>
+              </li>
+              <li className="flex items-center gap-2">
+                <FaEnvelope />
+                <a href="mailto:support@medconnect.com" className="transition hover:text-teal-300">
+                  support@medconnect.com
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
-    
 
-        {/* quick links */}
-  <div className="flex  flex-col">
-   <div>
-            <h1 className="text-xl md:text-2xl flex items-center md:flex font-semibold text-white">
-              Quick Links
-            </h1>
-        
+        <div className="grid gap-3 pt-6 text-sm text-slate-400 md:grid-cols-2">
+          <p>(c) {currentYear} MedConnect. All rights reserved.</p>
+          <div className="flex items-center gap-4 md:justify-end">
+            <span>Licensed Pharmacies</span>
+            <span>Secure Payments</span>
+            <span>Data Protected</span>
           </div>
-    <ul className="flex flex-col gap-2 mt-2">
-        {navItems.map((item) => (
-            <li key = {item.path}>
-                <NavLink to = {item.path}  className={linkClass}>
-                    {item.label}
-                </NavLink>
-            </li>
-        ))}
-    </ul>
-  </div>
+        </div>
+      </div>
+    </footer>
+  );
+};
 
-          {/* quick links */}
-  <div className="flex  flex-col">
-   <div>
-            <h1 className="text-xl md:text-2xl md:flex font-semibold text-white">
-              Customer Service
-            </h1>
-        
-          </div>
-    <ul className="flex flex-col gap-2 mt-2">
-        {CustomerSevice.map((item) => (
-            <li key = {item.path}>
-                <NavLink to = {item.path}  className={linkClass}>
-                    {item.label}
-                </NavLink>
-            </li>
-        ))}
-    </ul>
-  </div>
-
-          {/* quick links */}
-  <div className="flex  flex-col">
-   <div>
-            <h1 className="text-xl md:text-2xl  md:flex font-semibold text-white">
-              HealthPlus Pharmacy
-            </h1>
-        
-          </div>
-    <ul className="flex flex-col gap-2 mt-2">
-        {navItems.map((item) => (
-            <li key = {item.path}>
-                <NavLink to = {item.path}  className={linkClass}>
-                    {item.label}
-                </NavLink>
-            </li>
-        ))}
-    </ul>
-  </div>        
-            </div>
-
-            {/* send us email section */}
-
-            <div className="px-4 md:px-6 py-6">
-                <div>
-                    <h1 className="flex items-center text-2xl pb-2 md:pb-3 md:text-3xl">Subscribe to Our Newsletter</h1>
-                </div>
-                   <section className="border-b-1 border-gray-800 pb-6">
-                        <div className=" md:flex flex flex-1 max-w-xl gap-3 mt-3">
-                          <div className="relative w-full ">
-                            <input
-                              type="search"
-                              placeholder="Enter your Email ......"
-                              className="w-full pl-10 pr-4 py-4 rounded-lg bg-gray-800 focus:outline-none focus:ring-2 focus:ring-teal-500"
-                            />
-                          </div>
-                          <button className="bg-gray-950 px-6 py-3 rounded-lg text-xl">Subscribe</button>
-                        </div>     
-                        <p className="flex text-gray-700 text-base mt-2">Get updates on new products, special offers, and health tips.</p>
-                        </section>           
-            </div>
-
-            {/*  All rights Preserved*/}
-
-            <div className="flex items-center justify-between py-6 
-                        grid grid-cols-1  md:grid-cols-2
-            ">
-               <span>
-                 <p className="text-gray-400 flex items-center justify-center py-2">© 2025 HealthPlus Pharmacy. All rights reserved.</p>
-               </span>
-
-               <div className="flex justify-center space-x-3 text-gray-400">
-                <span>Licensed & Certified</span>
-                <span>HIPAA Compliant</span>
-                <span>SSL Secured</span>
-               </div>
-
-            </div>
-        </footer>
-    )
-}
 export default Footer;

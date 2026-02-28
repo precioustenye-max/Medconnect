@@ -43,7 +43,7 @@ export default function Topbar({ setOpen }) {
           </button>
 
           <div className="min-w-0">
-            <h1 className="truncate text-xl font-semibold text-slate-900 sm:text-2xl">{pageTitle}</h1>
+            <h1 className="truncate text-xl font-semibold bg-linear-to-r from-blue-900 to-purple-600 bg-clip-text text-transparent sm:text-2xl">{pageTitle}</h1>
             <p className="truncate text-sm text-slate-500">{subtitle}</p>
           </div>
         </div>

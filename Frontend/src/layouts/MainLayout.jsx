@@ -10,7 +10,7 @@ const MainLayout = ({ searchTerm, onSearch }) => {
       <Header searchTerm={searchTerm} onSearch={onSearch} />
 
       {/* Page content */}
-      <main className="flex-1 pt-10">
+      <main className="flex-1 pt-24 md:pt-28">
         <Outlet />
       </main>
 

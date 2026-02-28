@@ -142,10 +142,10 @@ export default function PharmacyDrugsPage() {
 
   if (loading && drugs.length === 0) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
+      <div className="flex items-center justify-center min-h-96">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-teal-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your drug inventory...</p>
+          <div className="w-16 h-16 border-4 border-cyan-400 border-t-cyan-700 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-600 font-semibold">Loading your drug inventory...</p>
         </div>
       </div>
     );
@@ -154,43 +154,43 @@ export default function PharmacyDrugsPage() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between bg-slate-50 p-6 rounded-xl border border-blue-200">
         <div>
-          <h2 className="text-3xl font-bold text-gray-800">Drug Inventory</h2>
-          <p className="text-gray-500 mt-1">Manage your pharmacy's medication stock</p>
+          <h2 className="text-3xl font-bold text-slate-900">Drug Inventory</h2>
+          <p className="text-slate-600 font-medium mt-1">Manage your pharmacy's medication stock</p>
         </div>
-        <div className="bg-teal-50 px-4 py-2 rounded-lg">
-          <span className="text-sm text-teal-600 font-medium">Total Drugs: {drugs.length}</span>
+        <div className="bg-cyan-500 px-6 py-3 rounded-xl shadow-lg">
+          <span className="text-white font-bold text-lg">{drugs.length} Drugs</span>
         </div>
       </div>
 
       {/* Alert Messages */}
       {error && (
-        <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
+        <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-xl shadow-md">
           <div className="flex items-center">
-            <svg className="w-5 h-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <svg className="w-5 h-5 text-red-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
             </svg>
-            <p className="text-red-700">{error}</p>
+            <p className="text-red-700 font-semibold">{error}</p>
           </div>
         </div>
       )}
       
       {message && (
-        <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded-lg">
+        <div className="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-xl shadow-md">
           <div className="flex items-center">
-            <svg className="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <svg className="w-5 h-5 text-emerald-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
             </svg>
-            <p className="text-green-700">{message}</p>
+            <p className="text-emerald-700 font-semibold">{message}</p>
           </div>
         </div>
       )}
 
       {/* Add Drug Form */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-          <svg className="w-5 h-5 mr-2 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="bg-white rounded-xl shadow-lg border border-slate-200 p-6 hover:shadow-xl transition-shadow">
+        <h3 className="text-xl font-bold text-cyan-600 mb-6 flex items-center">
+          <svg className="w-6 h-6 text-cyan-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
           </svg>
           Add New Drug
@@ -199,9 +199,9 @@ export default function PharmacyDrugsPage() {
         <form onSubmit={onAddDrug} className="space-y-4">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Drug Name *</label>
+              <label className="block text-sm font-bold text-slate-700 mb-2">Drug Name *</label>
               <input 
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition"
+                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none transition bg-white"
                 value={newDrug.name} 
                 onChange={(e) => setNewDrug({ ...newDrug, name: e.target.value })} 
                 placeholder="e.g., Paracetamol" 
@@ -210,9 +210,9 @@ export default function PharmacyDrugsPage() {
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+              <label className="block text-sm font-bold text-slate-700 mb-2">Category</label>
               <input 
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition"
+                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-slate-500 focus:border-slate-500 outline-none transition bg-white"
                 value={newDrug.category} 
                 onChange={(e) => setNewDrug({ ...newDrug, category: e.target.value })} 
                 placeholder="e.g., Pain Relief" 
@@ -220,11 +220,11 @@ export default function PharmacyDrugsPage() {
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Price *</label>
+              <label className="block text-sm font-bold text-slate-700 mb-2">Price *</label>
               <div className="relative">
-                <span className="absolute left-3 top-2 text-gray-500">$</span>
+                <span className="absolute left-3 top-2 text-slate-500 font-bold">$</span>
                 <input 
-                  className="w-full border border-gray-300 rounded-lg pl-7 pr-4 py-2 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition"
+                  className="w-full border border-slate-300 rounded-lg pl-7 pr-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition bg-white"
                   type="number" 
                   min="0" 
                   step="0.01"
@@ -237,9 +237,9 @@ export default function PharmacyDrugsPage() {
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Stock Quantity</label>
+              <label className="block text-sm font-bold text-slate-700 mb-2">Stock Quantity</label>
               <input 
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition"
+                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-white"
                 type="number" 
                 min="0"
                 value={newDrug.stock} 
@@ -249,8 +249,8 @@ export default function PharmacyDrugsPage() {
             </div>
             
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Drug Image</label>
-              <label className="w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-3 flex items-center justify-center text-sm text-gray-700 cursor-pointer hover:border-teal-400 transition">
+              <label className="block text-sm font-bold text-slate-700 mb-2">Drug Image</label>
+              <label className="w-full border-2 border-dashed border-cyan-300 rounded-lg px-4 py-3 flex items-center justify-center text-sm text-cyan-700 cursor-pointer hover:border-cyan-500 hover:bg-cyan-50 transition bg-cyan-50/30">
                 <input type="file" accept="image/*" className="hidden" onChange={handleDrugImageUpload} />
                 {imageFileName ? `Selected: ${imageFileName}` : "Upload drug image"}
               </label>
@@ -258,15 +258,15 @@ export default function PharmacyDrugsPage() {
                 <img
                   src={newDrug.imageUrl}
                   alt="Drug preview"
-                  className="mt-3 h-28 w-28 object-cover rounded border"
+                  className="mt-3 h-28 w-28 object-cover rounded-lg border-2 border-cyan-200"
                 />
               )}
             </div>
             
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+              <label className="block text-sm font-bold text-slate-700 mb-2">📝 Description</label>
               <textarea 
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition"
+                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition bg-white"
                 rows="2"
                 value={newDrug.description} 
                 onChange={(e) => setNewDrug({ ...newDrug, description: e.target.value })} 
@@ -278,18 +278,18 @@ export default function PharmacyDrugsPage() {
               <label className="flex items-center gap-2 cursor-pointer">
                 <input 
                   type="checkbox" 
-                  className="w-4 h-4 text-teal-600 rounded border-gray-300 focus:ring-teal-500"
+                  className="w-4 h-4 rounded border-slate-300 focus:ring-slate-500 accent-slate-500"
                   checked={newDrug.prescriptionRequired} 
                   onChange={(e) => setNewDrug({ ...newDrug, prescriptionRequired: e.target.checked })} 
                 />
-                <span className="text-sm text-gray-700">Prescription required</span>
+                <span className="text-sm text-slate-700 font-medium">Prescription required</span>
               </label>
             </div>
           </div>
           
           <div className="flex justify-end">
             <button 
-              className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 rounded-lg font-medium transition-colors flex items-center gap-2"
+              className="bg-cyan-500 hover:shadow-lg text-white px-8 py-3 rounded-lg font-bold transition-all flex items-center gap-2"
               type="submit"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -304,20 +304,20 @@ export default function PharmacyDrugsPage() {
       {/* Search and Filter Bar */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="flex-1 relative">
-          <svg className="w-5 h-5 absolute left-3 top-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5 absolute left-3 top-3 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
           <input
             type="text"
             placeholder="Search drugs by name, category, or description..."
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition"
+            className="w-full pl-10 pr-4 py-3 border border-cyan-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none transition bg-white"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
         
         <select
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition bg-white"
+          className="px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500 outline-none transition bg-white font-medium text-slate-700"
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value)}
         >
@@ -331,20 +331,20 @@ export default function PharmacyDrugsPage() {
 
       {/* Drugs List */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-gray-800 flex items-center justify-between">
-          <span>Drug List</span>
-          <span className="text-sm font-normal text-gray-500">
-            Showing {filteredDrugs.length} of {drugs.length} drugs
+        <h3 className="text-xl font-bold text-slate-900 flex items-center justify-between">
+          <span>📋 Drug List</span>
+          <span className="text-sm font-normal text-slate-600 bg-slate-100 px-4 py-2 rounded-full">
+            {filteredDrugs.length} of {drugs.length}
           </span>
         </h3>
 
         {filteredDrugs.length === 0 ? (
-          <div className="text-center py-12 bg-gray-50 rounded-lg">
-            <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="text-center py-12 bg-blue-50 rounded-lg border border-blue-200">
+            <svg className="w-16 h-16 text-blue-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 4v6a1 1 0 01-1 1h-4a1 1 0 01-1-1V8L8 4z" />
             </svg>
-            <p className="text-gray-500 text-lg">No drugs found</p>
-            <p className="text-gray-400 text-sm mt-1">
+            <p className="text-slate-700 text-lg font-bold">No drugs found</p>
+            <p className="text-slate-500 text-sm mt-1 font-medium">
               {searchTerm || categoryFilter !== "all" ? "Try adjusting your search or filter" : "Add your first drug using the form above"}
             </p>
           </div>
@@ -353,28 +353,28 @@ export default function PharmacyDrugsPage() {
             {filteredDrugs.map((drug) => (
               <div 
                 key={drug.id} 
-                className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                className="bg-white border border-slate-200 rounded-xl p-4 hover:shadow-xl hover:border-cyan-300 transition-all"
               >
                 {editingId === drug.id ? (
                   // Edit Mode
                   <div className="space-y-3">
                     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-3">
                       <input 
-                        className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition"
+                        className="border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none transition"
                         value={drug.name || ""} 
                         onChange={(e) => setDrugs((prev) => prev.map((d) => (d.id === drug.id ? { ...d, name: e.target.value } : d)))}
                         placeholder="Name"
                       />
                       <input 
-                        className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition"
+                        className="border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition"
                         value={drug.category || ""} 
                         onChange={(e) => setDrugs((prev) => prev.map((d) => (d.id === drug.id ? { ...d, category: e.target.value } : d)))}
                         placeholder="Category"
                       />
                       <div className="relative">
-                        <span className="absolute left-3 top-2 text-gray-500 text-sm">$</span>
+                        <span className="absolute left-3 top-2 text-slate-500 text-sm">$</span>
                         <input 
-                          className="w-full border border-gray-300 rounded-lg pl-7 pr-3 py-2 text-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition"
+                          className="w-full border border-slate-300 rounded-lg pl-7 pr-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition"
                           type="number" 
                           value={drug.price} 
                           onChange={(e) => setDrugs((prev) => prev.map((d) => (d.id === drug.id ? { ...d, price: e.target.value } : d)))}
@@ -382,7 +382,7 @@ export default function PharmacyDrugsPage() {
                         />
                       </div>
                       <input 
-                        className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition"
+                        className="border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
                         type="number" 
                         value={drug.stock || 0} 
                         onChange={(e) => setDrugs((prev) => prev.map((d) => (d.id === drug.id ? { ...d, stock: e.target.value } : d)))}
@@ -391,7 +391,7 @@ export default function PharmacyDrugsPage() {
                     </div>
                     <div className="flex gap-2 justify-end">
                       <button 
-                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1"
+                        className="bg-emerald-500 hover:shadow-lg text-white px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-1"
                         onClick={() => onUpdateDrug(drug)}
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -400,7 +400,7 @@ export default function PharmacyDrugsPage() {
                         Save
                       </button>
                       <button 
-                        className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                        className="bg-slate-500 hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-sm font-bold transition-all"
                         onClick={() => setEditingId(null)}
                       >
                         Cancel
@@ -412,47 +412,47 @@ export default function PharmacyDrugsPage() {
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <h4 className="font-semibold text-gray-800">{drug.name}</h4>
+                        <h4 className="font-bold text-slate-900">{drug.name}</h4>
                         {drug.prescriptionRequired && (
-                          <span className="bg-amber-100 text-amber-700 text-xs px-2 py-1 rounded-full font-medium">
-                            Prescription Required
+                          <span className="bg-orange-400 text-white text-xs px-3 py-1 rounded-full font-bold shadow-md">
+                            ⚠️ Prescription
                           </span>
                         )}
                         {drug.stock <= 10 && drug.stock > 0 && (
-                          <span className="bg-yellow-100 text-yellow-700 text-xs px-2 py-1 rounded-full font-medium">
-                            Low Stock
+                          <span className="bg-yellow-400 text-white text-xs px-3 py-1 rounded-full font-bold shadow-md">
+                            ⚡ Low Stock
                           </span>
                         )}
                         {drug.stock === 0 && (
-                          <span className="bg-red-100 text-red-700 text-xs px-2 py-1 rounded-full font-medium">
-                            Out of Stock
+                          <span className="bg-red-500 text-white text-xs px-3 py-1 rounded-full font-bold shadow-md">
+                            🚫 Out of Stock
                           </span>
                         )}
                       </div>
                       
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                         <div>
-                          <span className="text-gray-500">Category:</span>
-                          <p className="font-medium text-gray-700">{drug.category || "—"}</p>
+                          <span className="text-slate-600 font-medium">Category:</span>
+                          <p className="font-bold text-slate-900">{drug.category || "—"}</p>
                         </div>
                         <div>
-                          <span className="text-gray-500">Price:</span>
-                          <p className="font-medium text-gray-700">${Number(drug.price).toFixed(2)}</p>
+                          <span className="text-slate-600 font-medium">Price:</span>
+                          <p className="font-bold text-emerald-500">${Number(drug.price).toFixed(2)}</p>
                         </div>
                         <div>
-                          <span className="text-gray-500">Stock:</span>
-                          <p className="font-medium text-gray-700">{drug.stock || 0} units</p>
+                          <span className="text-slate-600 font-medium">Stock:</span>
+                          <p className="font-bold text-slate-900">{drug.stock || 0} units</p>
                         </div>
                       </div>
                       
                       {drug.description && (
-                        <p className="text-sm text-gray-600 mt-2 line-clamp-2">{drug.description}</p>
+                        <p className="text-sm text-slate-600 mt-2 line-clamp-2">{drug.description}</p>
                       )}
                     </div>
                     
                     <div className="flex gap-2 ml-4">
                       <button 
-                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        className="p-2 text-cyan-600 hover:bg-cyan-50 rounded-lg transition-all hover:shadow-md"
                         onClick={() => setEditingId(drug.id)}
                         title="Edit drug"
                       >
@@ -461,7 +461,7 @@ export default function PharmacyDrugsPage() {
                         </svg>
                       </button>
                       <button 
-                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-all hover:shadow-md"
                         onClick={() => onDeleteDrug(drug.id)}
                         title="Delete drug"
                       >

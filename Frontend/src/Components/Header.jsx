@@ -1,11 +1,19 @@
 import React, { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import CartPage from "./UI/CartPage";
-import { Phone, MessageCircle } from "lucide-react";
-import { 
-  FaBars, FaTimes, FaPlus, FaShoppingCart, FaUser,
-  FaHome, FaStore, FaPrescriptionBottle, FaStethoscope, 
-  FaInfoCircle, FaEnvelope 
+import { Phone, MessageCircle, Mail, Clock3 } from "lucide-react";
+import {
+  FaBars,
+  FaTimes,
+  FaPlus,
+  FaShoppingCart,
+  FaUser,
+  FaHome,
+  FaStore,
+  FaPrescriptionBottle,
+  FaStethoscope,
+  FaInfoCircle,
+  FaEnvelope,
 } from "react-icons/fa";
 import { useCart } from "../contexts/CartContext";
 import API from "../services/api";
@@ -17,7 +25,7 @@ const navItems = [
   { label: "Shop", path: "/shop", icon: <FaPrescriptionBottle /> },
   { label: "Prescriptions", path: "/prescription", icon: <FaStethoscope /> },
   { label: "Health Services", path: "/healthservice", icon: <FaStethoscope /> },
-  { label: "About Us", path: "/about", icon: <FaInfoCircle /> },
+  { label: "About", path: "/about", icon: <FaInfoCircle /> },
   { label: "Contact", path: "/contact", icon: <FaEnvelope /> },
 ];
 
@@ -33,7 +41,7 @@ const Header = () => {
     try {
       await API.post("/auth/logout");
     } catch (error) {
-      // Still clear client auth state even if backend logout request fails.
+      // Keep client logout resilient if backend logout fails.
     } finally {
       clearUser();
       navigate("/login", { replace: true });
@@ -41,145 +49,200 @@ const Header = () => {
   };
 
   const linkClass = ({ isActive }) =>
-    `font-semibold text-sm md:text-xl transition-colors ${
-      isActive ? "text-teal-600" : "text-gray-500 hover:text-teal-600"
+    `text-base font-semibold transition-colors ${
+      isActive ? "text-teal-700" : "text-slate-600 hover:text-teal-700"
     }`;
 
+  const dashboardPath = user?.role === "admin" ? "/admin" : "/pharmacy";
+
   return (
-    <header className="fixed top-0 left-0 w-full z-50 bg-white shadow-sm">
-      {/* Main header */}
-      <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-        {/* Mobile menu button */}
-        <button
-          aria-label="Open menu"
-          className="md:hidden p-2"
-          onClick={() => setMobileMenuOpen(true)}
-        >
-          <FaBars className="w-5 h-5" />
-        </button>
+    <>
+      <header className="fixed top-0 left-0 w-full z-50 border-b border-slate-200 bg-white shadow-sm">
 
-        {/* Logo */}
-        <div className="flex items-center gap-3">
-          <div className="w-7 h-7 md:w-10 md:h-10 bg-teal-600 rounded-lg flex items-center justify-center text-white">
-            <FaPlus />
-          </div>
-          <div className="hidden md:flex flex-col">
-            <h1 className="text-2xl font-semibold text-teal-600">MedLink</h1>
-            <p className="text-sm text-gray-600">Your trusted healthcare partner</p>
-          </div>
-        </div>
-
-        {/* Desktop nav */}
-        <nav className="hidden md:block flex-1 mx-6">
-          <ul className="flex gap-8 justify-center">
-            {navItems.map((item) => (
-              <li key={item.path}>
-                <NavLink to={item.path} className={linkClass}>
-                  {item.label}
-                </NavLink>
-              </li>
-            ))}
-          </ul>
-        </nav>
-
-        {/* Right actions */}
-        <div className="flex items-center gap-4">
-          {isLoggedIn && (user?.role === "pharmacy" || user?.role === "admin") && (
-            <Link to={user?.role === "admin" ? "/admin" : "/pharmacy"} className="hidden md:flex items-center gap-2 text-xl font-medium">
-              <span>Dashboard</span>
-            </Link>
-          )}
-          {isLoggedIn && (
-            <button
-              onClick={handleLogout}
-              className="hidden md:flex items-center gap-2 text-xl font-medium"
-            >
-              <FaUser />
-              <span>Logout</span>
-            </button>
-          )}
-
-          {/* Cart button */}
+        <div className="container mx-auto flex items-center justify-between px-4 py-4 md:py-5">
           <button
-            onClick={() => setIsCartOpen(true)}
-            className="relative flex bg-black items-center gap-2 rounded-lg py-2 md:px-3 px-2 text-white font-semibold"
+            aria-label="Open menu"
+            className="rounded-md p-2 text-slate-700 md:hidden"
+            onClick={() => setMobileMenuOpen(true)}
           >
-            <FaShoppingCart className="w-5 h-3 md:w-5 md:h-5" />
-            <span className="hidden md:inline">Cart</span>
-
-            {cartCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full">
-                {cartCount}
-              </span>
-            )}
+            <FaBars className="h-5 w-5" />
           </button>
+
+          <Link to="/" className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-teal-600 text-white">
+              <FaPlus />
+            </div>
+            <div className="hidden md:flex md:flex-col">
+              <h1 className="text-lg font-bold text-slate-900">MedConnect</h1>
+              <p className="text-xs text-slate-500">Trusted digital pharmacy network</p>
+            </div>
+          </Link>
+
+          <nav className="hidden md:block md:flex-1 md:px-8">
+            <ul className="flex items-center justify-center gap-6">
+              {navItems.map((item) => (
+                <li key={item.path}>
+                  <NavLink to={item.path} className={linkClass}>
+                    {item.label}
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          <div className="flex items-center gap-2 md:gap-3">
+            {!isLoggedIn && (
+              <>
+                <Link
+                  to="/login"
+                  className="hidden rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 md:inline-flex"
+                >
+                  Sign in
+                </Link>
+                <Link
+                  to="/register"
+                  className="hidden rounded-lg bg-teal-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-teal-700 md:inline-flex"
+                >
+                  Create account
+                </Link>
+              </>
+            )}
+
+            {isLoggedIn && (user?.role === "pharmacy" || user?.role === "admin") && (
+              <Link
+                to={dashboardPath}
+                className="hidden rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 md:inline-flex"
+              >
+                Dashboard
+              </Link>
+            )}
+
+            {isLoggedIn && (
+              <button
+                onClick={handleLogout}
+                className="hidden items-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 md:inline-flex"
+              >
+                <FaUser />
+                <span>Logout</span>
+              </button>
+            )}
+
+            <button
+              onClick={() => setIsCartOpen(true)}
+              className="relative inline-flex items-center gap-2 rounded-lg bg-slate-900 px-2.5 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 md:px-3"
+              aria-label="Open cart"
+            >
+              <FaShoppingCart className="h-4 w-4" />
+              <span className="hidden md:inline">Cart</span>
+              {cartCount > 0 && (
+                <span className="absolute -right-2 -top-2 rounded-full bg-red-600 px-1.5 py-0.5 text-xs font-bold text-white">
+                  {cartCount}
+                </span>
+              )}
+            </button>
+          </div>
         </div>
-      </div>
 
-      {/* Mobile overlay */}
-      {mobileMenuOpen && (
-        <div
-          className="fixed inset-0 bg-black/40 z-40 md:hidden"
-          onClick={() => setMobileMenuOpen(false)}
-        />
-      )}
+        {mobileMenuOpen && (
+          <div
+            className="fixed inset-0 z-40 bg-black/40 md:hidden"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+        )}
 
-      {/* Mobile sidebar */}
-      <aside
-        className={`fixed top-0 left-0 h-full w-4/5 max-w-xs bg-white z-50
-          transform transition-transform duration-300 md:hidden
-          ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"}`}
-      >
-        <div className="flex flex-col h-full  p-4">
-          {/* Header */}
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-lg font-semibold text-teal-600">MedLink</h2>
-            <button onClick={() => setMobileMenuOpen(false)}>
-              <FaTimes className="w-6 h-6" />
+        <aside
+          className={`fixed left-0 top-0 z-50 h-full w-4/5 max-w-xs bg-white p-4 shadow-xl transition-transform duration-300 md:hidden ${
+            mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
+        >
+          <div className="mb-6 flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-teal-700">MedConnect</h2>
+            <button
+              onClick={() => setMobileMenuOpen(false)}
+              aria-label="Close menu"
+              className="rounded-md p-1.5 text-slate-700"
+            >
+              <FaTimes className="h-5 w-5" />
             </button>
           </div>
 
-          {/* Nav items */}
-          <nav className="flex flex-col gap-4 py-6">
+          <nav className="flex flex-col gap-2 py-2">
             {navItems.map((item) => (
               <NavLink
                 key={item.path}
                 to={item.path}
                 onClick={() => setMobileMenuOpen(false)}
                 className={({ isActive }) =>
-                  `flex items-center gap-4 p-3 rounded-lg transition-colors ${
-                    isActive
-                      ? "bg-teal-100 text-teal-600 font-semibold"
-                      : "text-gray-700 hover:bg-teal-50 hover:text-teal-600"
+                  `flex items-center gap-3 rounded-lg p-3 text-sm font-medium transition-colors ${
+                    isActive ? "bg-teal-50 text-teal-700" : "text-slate-700 hover:bg-slate-50"
                   }`
                 }
               >
-                <span className="text-xl flex-shrink-0">{item.icon}</span>
-                <span className="text-base flex-grow">{item.label}</span>
+                <span className="text-base">{item.icon}</span>
+                <span>{item.label}</span>
               </NavLink>
             ))}
           </nav>
 
-          {/* Contact buttons */}
-          <div className="mt-6 pt-4 border-t-1 border-gray-300 flex flex-col gap-3">
-            <button className="flex items-center gap-2 text-gray-700 hover:text-teal-600 transition-colors">
-              <Phone className="w-5 h-5" />
-              <span>654 471 272</span>
-            </button>
-            <button className="flex items-center gap-2 text-gray-700 hover:text-teal-600 transition-colors">
-              <MessageCircle className="w-5 h-5" />
-              <span>Message Us</span>
+          <div className="mt-6 space-y-2 border-t border-slate-200 pt-4">
+            {isLoggedIn && (user?.role === "pharmacy" || user?.role === "admin") && (
+              <Link
+                to={dashboardPath}
+                onClick={() => setMobileMenuOpen(false)}
+                className="block rounded-lg bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-700"
+              >
+                Dashboard
+              </Link>
+            )}
+
+            {!isLoggedIn && (
+              <>
+                <Link
+                  to="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block rounded-lg bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-700"
+                >
+                  Sign in
+                </Link>
+                <Link
+                  to="/register"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block rounded-lg bg-teal-600 px-3 py-2 text-sm font-semibold text-white"
+                >
+                  Create account
+                </Link>
+              </>
+            )}
+
+            {isLoggedIn && (
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  handleLogout();
+                }}
+                className="flex w-full items-center gap-2 rounded-lg bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-700"
+              >
+                <FaUser />
+                Logout
+              </button>
+            )}
+          </div>
+
+          <div className="mt-6 space-y-2 border-t border-slate-200 pt-4 text-sm text-slate-600">
+            <a href="tel:+1654471272" className="flex items-center gap-2 hover:text-teal-700">
+              <Phone className="h-4 w-4" />
+              +1 (654) 471-272
+            </a>
+            <button className="flex items-center gap-2 hover:text-teal-700">
+              <MessageCircle className="h-4 w-4" />
+              Message support
             </button>
           </div>
-        </div>
-      </aside>
+        </aside>
+      </header>
 
-      {/* Cart Sidebar */}
-      <CartPage
-        open={isCartOpen}
-        onClose={() => setIsCartOpen(false)}
-      />
-    </header>
+      <CartPage open={isCartOpen} onClose={() => setIsCartOpen(false)} />
+    </>
   );
 };
 

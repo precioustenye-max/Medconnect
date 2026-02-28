@@ -120,7 +120,7 @@ const Shop = ({ searchTerm }) => {
   />
 
   {/* Dark overlay */}
-  <div className="absolute inset-0 bg-gradient-to-r from-slate-900/85 via-slate-900/70 to-teal-900/60" />
+  <div className="absolute inset-0 bg-linear-to-r from-slate-900/85 via-slate-900/70 to-teal-900/60" />
 
   <div className="relative z-10 flex flex-col justify-center items-center h-full text-white text-center px-4">
 
@@ -225,7 +225,7 @@ const Shop = ({ searchTerm }) => {
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value)}
-              className="border-gray-300 border-1 rounded-lg px-6 py-2 text-xl text-gray-600 bg-white"
+              className="border-gray-300 border rounded-lg px-6 py-2 text-xl text-gray-600 bg-white"
             >
               <option value="newest">Newest</option>
               <option value="priceLow">
@@ -317,18 +317,25 @@ const Shop = ({ searchTerm }) => {
                             `/drug/${product.id}/pharmacies`
                           )
                         }
-                        className="flex-1 border-gray-300 border-1 rounded-lg py-2 text-sm hover:bg-gray-50"
+                        className="flex-1 border-gray-300 border rounded-lg py-2 text-sm hover:bg-gray-50"
                       >
                         View
                       </button>
 
                       <button
                         onClick={() => {
+                          const pharmacyId = Number(product.pharmacyId || product.Pharmacy?.id || 0);
+                          if (!pharmacyId) {
+                            navigate(`/drug/${product.id}/pharmacies`);
+                            return;
+                          }
                           addToCart(
                             {
                               id: product.id,
                               name: product.name,
                               price: Number(product.price),
+                              pharmacyId,
+                              pharmacyName: product.Pharmacy?.name || undefined,
                             },
                             1
                           );
