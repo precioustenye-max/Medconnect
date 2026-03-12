@@ -165,7 +165,7 @@ export default function PharmacyOverview() {
                       #{index + 1}
                     </div>
                     <div>
-                      <p className="font-semibold text-slate-900">Order #{order.id}</p>
+                      <p className="font-semibold text-slate-900">Order</p>
                       {order.customer && (
                         <p className="text-xs text-slate-500 font-medium">{order.customer}</p>
                       )}

@@ -13,6 +13,7 @@ const pharmacyRoutes = require("./routes/pharmacy.routes");
 const publicRoutes = require("./routes/public.routes");
 const adminRoutes = require("./routes/admin.routes");
 const prescriptionRoutes = require("./routes/prescription.routes");
+const notificationRoutes = require("./routes/notification.routes");
 
 const app = express();
 const defaultOrigins = [
@@ -62,6 +63,7 @@ app.use("/api/pharmacies", pharmacyRoutes);
 app.use("/api/public", publicRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/prescriptions", prescriptionRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 // ROOT TEST ROUTE
 app.get("/", (req, res) => {

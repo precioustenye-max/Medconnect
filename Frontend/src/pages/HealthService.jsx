@@ -9,7 +9,7 @@ const services = [
     title: 'Health Consultations',
     description: 'Speak with licensed pharmacists and healthcare professionals about your health concerns.',
     features: ['15-30 minute consultations', 'Medication reviews', 'Health advice', 'Follow-up support'],
-    price: '$29.99',
+    price: '29,999 CFA',
     badge: 'Popular'
   },
   {
@@ -25,7 +25,7 @@ const services = [
     title: 'Health Screenings',
     description: 'Comprehensive health screenings including blood pressure, cholesterol, and glucose testing.',
     features: ['Blood pressure monitoring', 'Cholesterol testing', 'Diabetes screening', 'BMI assessment'],
-    price: '$19.99',
+    price: '19,999 CFA',
     badge: null
   },
   {
@@ -33,7 +33,7 @@ const services = [
     title: 'Chronic Care Management',
     description: 'Ongoing support for managing chronic conditions like diabetes, hypertension, and asthma.',
     features: ['Personalized care plans', 'Medication therapy management', 'Regular check-ins', 'Educational resources'],
-    price: '$49.99/month',
+    price: '49,999 CFA/month',
     badge: 'Recommended'
   },
   {
@@ -41,7 +41,7 @@ const services = [
     title: 'Telehealth Services',
     description: 'Connect with healthcare providers remotely from the comfort of your home.',
     features: ['Video consultations', 'E-prescriptions', 'Same-day appointments', '24/7 availability'],
-    price: '$39.99',
+    price: '39,999 CFA',
     badge: 'New'
   },
   {

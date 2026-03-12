@@ -54,7 +54,7 @@ const ProductSection = ({ searchTerm }) => {
 
   return (
     <section className="px-2 md:px-10 py-8 md:16 relative">
-      <h2 className="text-3xl md:text-4xl font-semibold md:mb-8 mb-3">Shop by Category</h2>
+      <h2 className="text-3xl md:text-5xl font-semibold md:mb-8 mb-3">Shop by Category</h2>
 
       <CategoryFilter categories={categories} activeCategory={activeCategory} onChange={setActiveCategory} />
 

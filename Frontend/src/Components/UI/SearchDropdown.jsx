@@ -1,17 +1,32 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Link } from "react-router-dom";
-import products from "../data/products.jsx"; // your products array
+import { getPublicDrugs } from "../../services/public.api";
 
 const MobileSearchDropdown = ({ searchTerm, onSearch }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [drugs, setDrugs] = useState([]);
 
-  // Filter products based on search term
+  // Fetch real drugs from API on component mount
+  useEffect(() => {
+    const loadDrugs = async () => {
+      try {
+        const data = await getPublicDrugs();
+        setDrugs(data.items || []);
+      } catch (err) {
+        console.error("Failed to load drugs:", err);
+        setDrugs([]);
+      }
+    };
+    loadDrugs();
+  }, []);
+
+  // Filter drugs based on search term
   const filteredProducts = useMemo(() => {
     if (!searchTerm.trim()) return [];
-    return products.filter(p =>
+    return drugs.filter(p =>
       p.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
-  }, [searchTerm]);
+  }, [searchTerm, drugs]);
 
   const handleChange = (e) => {
     onSearch(e.target.value);
@@ -41,7 +56,7 @@ const MobileSearchDropdown = ({ searchTerm, onSearch }) => {
           {filteredProducts.map(product => (
             <li key={product.id}>
               <Link
-                to={`/products/${product.id}`}
+                to={`/drug/${product.id}/pharmacies`}
                 className="block px-4 py-2 hover:bg-blue-50"
                 onClick={() => setIsOpen(false)}
               >

@@ -1,4 +1,4 @@
-const { Prescription, Pharmacy, User } = require("../models");
+const { Prescription, Pharmacy, User, Notification } = require("../models");
 
 const parsePositiveInt = (value) => {
   const next = Number(value);
@@ -135,8 +135,46 @@ exports.reviewPrescription = async (req, res) => {
       reviewedAt: new Date(),
     });
 
+    // Create notification for the user
+    await Notification.create({
+      userId: prescription.userId,
+      type: "prescription_status",
+      title: `Prescription ${status}`,
+      message: 
+        status === "verified" 
+          ? `Your prescription for ${prescription.drugName} has been verified and is ready for collection.`
+          : `Your prescription for ${prescription.drugName} has been rejected. Reason: ${rejectionReason}`,
+      relatedId: prescriptionId,
+    });
+
     return res.json({ message: "Prescription reviewed", prescription });
   } catch (error) {
     return res.status(500).json({ message: "Failed to review prescription", details: error.message });
+  }
+};
+
+exports.payForPrescription = async (req, res) => {
+  try {
+    const prescriptionId = parsePositiveInt(req.params.id);
+    if (!prescriptionId) {
+      return res.status(400).json({ message: "Invalid prescription id" });
+    }
+
+    const prescription = await Prescription.findByPk(prescriptionId);
+    if (!prescription) {
+      return res.status(404).json({ message: "Prescription not found" });
+    }
+    if (Number(prescription.userId) !== Number(req.user.id)) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+    if (prescription.status !== "verified") {
+      return res.status(400).json({ message: "Only verified prescriptions can be paid" });
+    }
+
+    await prescription.destroy();
+
+    return res.json({ message: "Payment recorded. Prescription removed." });
+  } catch (error) {
+    return res.status(500).json({ message: "Failed to process payment", details: error.message });
   }
 };

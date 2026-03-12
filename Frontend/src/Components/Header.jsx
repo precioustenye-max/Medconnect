@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import CartPage from "./UI/CartPage";
+import NotificationCenter from "./UI/NotificationCenter";
 import { Phone, MessageCircle, Mail, Clock3 } from "lucide-react";
 import {
   FaBars,
@@ -125,6 +126,10 @@ const Header = () => {
                 <FaUser />
                 <span>Logout</span>
               </button>
+            )}
+
+            {isLoggedIn && (
+              <NotificationCenter />
             )}
 
             <button

@@ -39,3 +39,8 @@ export const updateOrderStatus = async (id, status) => {
   const response = await API.patch(`/orders/${id}/status`, { status });
   return response.data;
 };
+
+export const deleteOrder = async (id) => {
+  const response = await API.delete(`/orders/${id}`);
+  return response.data;
+};

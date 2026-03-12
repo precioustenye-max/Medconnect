@@ -15,6 +15,10 @@ const orderInclude = [
     attributes: ["id", "name", "email"],
   },
   {
+    model: db.Pharmacy,
+    attributes: ["id", "name", "location"],
+  },
+  {
     model: db.OrderItem,
     attributes: ["id", "drugId", "quantity", "price", "createdAt"],
     include: [
@@ -187,7 +191,23 @@ exports.updateOrderStatus = async (req, res) => {
       return res.status(400).json({ message: "Invalid order status" });
     }
 
-    const order = await db.Order.findByPk(orderId);
+    const order = await db.Order.findByPk(orderId, {
+      include: [
+        { model: db.User, attributes: ["id", "name", "email"] },
+        {
+          model: db.OrderItem,
+          attributes: ["id", "drugId", "quantity", "price"],
+          include: [
+            {
+              model: db.Drug,
+              attributes: ["id", "name", "price"],
+            },
+          ],
+        },
+        { model: db.Pharmacy, attributes: ["id", "name", "location"] },
+      ],
+    });
+
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
@@ -198,6 +218,26 @@ exports.updateOrderStatus = async (req, res) => {
 
     await order.update({ status });
 
+    // Create notification with pharmacy and drug details
+    const drugNames = order.OrderItems?.map((item) => item.Drug?.name).join(", ") || "items";
+    const pharmacyName = order.Pharmacy?.name || "pharmacy";
+
+    const statusMessages = {
+      pending: `Your order from ${pharmacyName} is pending.`,
+      paid: `Your order from ${pharmacyName} (${drugNames}) has been paid.`,
+      processing: `Your order from ${pharmacyName} (${drugNames}) is being processed.`,
+      delivered: `Your order from ${pharmacyName} (${drugNames}) has been delivered.`,
+      cancelled: `Your order from ${pharmacyName} (${drugNames}) has been cancelled.`,
+    };
+
+    await db.Notification.create({
+      userId: order.userId,
+      type: "order_status",
+      title: `Order ${status}`,
+      message: statusMessages[status] || `Your order status has been updated to ${status}`,
+      relatedId: orderId,
+    });
+
     res.json({
       message: "Order status updated successfully",
       order,
@@ -205,6 +245,36 @@ exports.updateOrderStatus = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Failed to update order status",
+      error: error.message,
+    });
+  }
+};
+
+exports.deleteOrder = async (req, res) => {
+  try {
+    const orderId = Number(req.params.id);
+    if (!Number.isInteger(orderId) || orderId <= 0) {
+      return res.status(400).json({ message: "Invalid order id" });
+    }
+
+    const order = await db.Order.findByPk(orderId);
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    if (Number(order.pharmacyId) !== Number(req.user.pharmacyId)) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    await sequelize.transaction(async (transaction) => {
+      await db.OrderItem.destroy({ where: { orderId }, transaction });
+      await order.destroy({ transaction });
+    });
+
+    res.json({ message: "Order deleted" });
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to delete order",
       error: error.message,
     });
   }

@@ -21,7 +21,7 @@ const issueAuthCookie = (res, user) => {
 // REGISTER
 const registerUser = async (req, res) => {
   try {
-    const { name, email, password, role, phone, pharmacyLocation, pharmacyName } = req.body;
+    const { name, email, password, role, phone, pharmacyLocation, pharmacyName, pharmacySecret, adminSecret } = req.body;
 
     if (!name || !email || !password || !role) {
       return res.status(400).json({
@@ -29,25 +29,22 @@ const registerUser = async (req, res) => {
       });
     }
 
-    // Check if user exists
-    const existingUser = await User.findOne({ where: { email } });
-    if (existingUser) {
-      return res.status(409).json({ message: "Email already registered" });
-    }
-
-    // Hash password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    let user;
-    if (role && role === "pharmacy") {
-      // ensure all pharmacy fields are available
-      if (!pharmacyName || !pharmacyLocation || !phone) {
-        return res.status(400).json({
-          message: "All fields are required",
+    // PHARMACY ROLE SECURITY CHECK
+    if (role === "pharmacy") {
+      const requiredPharmacySecret = process.env.PHARMACY_MASTER_SECRET || "MedConnect@Pharmacy2024";
+      if (!pharmacySecret || pharmacySecret !== requiredPharmacySecret) {
+        return res.status(403).json({
+          message: "Invalid pharmacy master password. Contact admin for access.",
+          error: "INVALID_PHARMACY_SECRET"
         });
       }
-      // create the pharmacy 
+
+      if (!pharmacyName || !pharmacyLocation || !phone) {
+        return res.status(400).json({
+          message: "All pharmacy fields are required",
+        });
+      }
+
       const pharmacy = await Pharmacy.create({
         name: pharmacyName,
         location: pharmacyLocation,
@@ -58,21 +55,49 @@ const registerUser = async (req, res) => {
         return res.status(500).json({ message: "Internal server error" });
       }
 
-      user = await User.create({
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+
+      const user = await User.create({
         name,
         email,
         password: hashedPassword,
-        role: role || "patient",
+        role: "pharmacy",
         pharmacyId: pharmacy?.id,
       });
-    } else {
-      user = await User.create({
-        name,
-        email,
-        password: hashedPassword,
-        role: role || "patient",
+
+      return res.status(201).json({
+        message: "Pharmacy registered successfully",
+        user: { id: user.id, name: user.name, email: user.email, role: user.role },
       });
     }
+
+    // ADMIN ROLE SECURITY CHECK
+    if (role === "admin") {
+      const requiredAdminSecret = process.env.ADMIN_MASTER_SECRET || "MedConnect@Admin2024";
+      if (!adminSecret || adminSecret !== requiredAdminSecret) {
+        return res.status(403).json({
+          message: "Invalid admin master password. Contact system administrator.",
+          error: "INVALID_ADMIN_SECRET"
+        });
+      }
+    }
+
+    // PATIENT REGISTRATION (no secret needed)
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const existingUser = await User.findOne({ where: { email } });
+    if (existingUser) {
+      return res.status(409).json({ message: "Email already registered" });
+    }
+
+    const user = await User.create({
+      name,
+      email,
+      password: hashedPassword,
+      role: role || "patient",
+    });
 
     res.status(201).json({
       message: "User registered successfully",

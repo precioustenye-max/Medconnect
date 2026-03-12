@@ -15,6 +15,11 @@ export const deleteMyPrescription = async (id) => {
   return response.data;
 };
 
+export const payForPrescription = async (id) => {
+  const response = await API.post(`/prescriptions/${id}/pay`);
+  return response.data;
+};
+
 export const getMyPharmacyPrescriptions = async () => {
   const response = await API.get("/prescriptions/pharmacy/my");
   return response.data;

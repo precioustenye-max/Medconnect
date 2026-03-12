@@ -15,6 +15,10 @@ const Register = () => {
     pharmacyLocation: "",
     phone: "",
   });
+  const [pharmacySecret, setPharmacySecret] = useState("");
+  const [adminSecret, setAdminSecret] = useState("");
+
+
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
@@ -48,13 +52,25 @@ const Register = () => {
         payload.pharmacyName = formData.pharmacyName;
         payload.pharmacyLocation = formData.pharmacyLocation;
         payload.phone = formData.phone;
+        payload.pharmacySecret = pharmacySecret;
+      }
+      if(
+        formData.role === "admin"
+      ) {
+        payload.adminSecret = adminSecret;
       }
 
       await API.post("/auth/register", payload);
       setSuccess("Registration successful. You can now log in.");
       navigate("/login", { replace: true });
     } catch (err) {
-      setError(err.response?.data?.message || "Registration failed");
+      if (err.response?.data?.error === "INVALID_PHARMACY_SECRET") {
+        setError("❌ Invalid pharmacy master password. Contact admin for access.");
+      } else if (err.response?.data?.error === "INVALID_ADMIN_SECRET") {
+        setError("❌ Invalid admin master password. Contact system administrator.");
+      } else {
+        setError(err.response?.data?.message || "Registration failed");
+      }
     }
   };
 
@@ -112,8 +128,43 @@ const Register = () => {
           >
             <option value="patient">Patient</option>
             <option value="pharmacy">Pharmacy</option>
+            <option value="admin">System Admin</option>
           </select>
         </div>
+
+        {formData.role === "pharmacy" && (
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              🔐 Pharmacy Master Password *
+            </label>
+            <input
+              type="password"
+              value={pharmacySecret}
+              onChange={(e) => setPharmacySecret(e.target.value)}
+              placeholder="Enter pharmacy master password"
+              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+              required
+            />
+            <p className="text-xs text-gray-500 mt-1">Contact admin for this password</p>
+          </div>
+        )}
+
+        {formData.role === "admin" && (
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              🔐 Admin Master Password *
+            </label>
+            <input
+              type="password"
+              value={adminSecret}
+              onChange={(e) => setAdminSecret(e.target.value)}
+              placeholder="Enter admin master password"
+              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+              required
+            />
+            <p className="text-xs text-gray-500 mt-1">Contact system administrator for this password</p>
+          </div>
+        )}
 
         {formData.role === "pharmacy" && (
           <>
@@ -143,6 +194,14 @@ const Register = () => {
               onChange={handleChange}
             />
           </>
+        )}
+
+        {formData.role === "admin" && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+            <p className="text-xs text-blue-700">
+              ⚠️ System admin accounts can manage all users, pharmacies, and orders. Use responsibly.
+            </p>
+          </div>
         )}
 
         {error && <p className="text-red-500 text-sm mt-2">{error}</p>}

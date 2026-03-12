@@ -222,7 +222,7 @@ export default function PharmacyDrugsPage() {
             <div>
               <label className="block text-sm font-bold text-slate-700 mb-2">Price *</label>
               <div className="relative">
-                <span className="absolute left-3 top-2 text-slate-500 font-bold">$</span>
+                <span className="absolute left-3 top-2 text-slate-500 font-bold">CFA</span>
                 <input 
                   className="w-full border border-slate-300 rounded-lg pl-7 pr-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition bg-white"
                   type="number" 
@@ -372,7 +372,7 @@ export default function PharmacyDrugsPage() {
                         placeholder="Category"
                       />
                       <div className="relative">
-                        <span className="absolute left-3 top-2 text-slate-500 text-sm">$</span>
+                        <span className="absolute left-3 top-2 text-slate-500 text-sm">CFA</span>
                         <input 
                           className="w-full border border-slate-300 rounded-lg pl-7 pr-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition"
                           type="number" 
@@ -437,7 +437,7 @@ export default function PharmacyDrugsPage() {
                         </div>
                         <div>
                           <span className="text-slate-600 font-medium">Price:</span>
-                          <p className="font-bold text-emerald-500">${Number(drug.price).toFixed(2)}</p>
+                          <p className="font-bold text-emerald-500">{Number(drug.price).toLocaleString()} CFA</p>
                         </div>
                         <div>
                           <span className="text-slate-600 font-medium">Stock:</span>

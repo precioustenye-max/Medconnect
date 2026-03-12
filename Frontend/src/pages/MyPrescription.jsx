@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { deleteMyPrescription, getMyPrescriptions } from "../services/prescription.api";
+import { deleteMyPrescription, getMyPrescriptions, payForPrescription } from "../services/prescription.api";
 
 const statusConfig = {
   submitted: "bg-yellow-100 text-yellow-700",
@@ -45,6 +45,18 @@ export const MyPrescription = () => {
       setMessage("Prescription deleted");
     } catch (err) {
       setError(err.response?.data?.message || "Failed to delete prescription");
+    }
+  };
+
+  const onPay = async (id) => {
+    setError("");
+    setMessage("");
+    try {
+      await payForPrescription(id);
+      setItems((prev) => prev.filter((item) => item.id !== id));
+      setMessage("Payment recorded. Prescription removed.");
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to process payment");
     }
   };
 
@@ -102,6 +114,11 @@ export const MyPrescription = () => {
               </div>
 
               {item.notes && <p className="text-sm text-gray-700 mt-3">Notes: {item.notes}</p>}
+              {item.status === "verified" && (
+                <p className="text-sm text-emerald-700 mt-3">
+                  Availability verified. You can now pay for the drugs.
+                </p>
+              )}
               {item.documentUrl && (
                 <a href={item.documentUrl} target="_blank" rel="noreferrer" className="text-sm text-teal-700 underline mt-3 inline-block">
                   View submitted document
@@ -116,6 +133,15 @@ export const MyPrescription = () => {
               {item.status === "submitted" && (
                 <button onClick={() => onDelete(item.id)} className="mt-3 text-sm text-red-600 underline">
                   Delete submission
+                </button>
+              )}
+
+              {item.status === "verified" && (
+                <button
+                  onClick={() => onPay(item.id)}
+                  className="mt-3 text-sm font-semibold text-white bg-emerald-600 px-4 py-2 rounded-lg hover:bg-emerald-700 transition"
+                >
+                  Pay for drugs
                 </button>
               )}
             </article>

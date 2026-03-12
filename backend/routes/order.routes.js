@@ -7,5 +7,6 @@ router.post("/", verifyToken, isPatient, orderController.createOrder);
 router.get("/my", verifyToken, isPatient, orderController.getMyOrders);
 router.get("/:id", verifyToken, orderController.getOrderById);
 router.patch("/:id/status", verifyToken, isPharmacy, orderController.updateOrderStatus);
+router.delete("/:id", verifyToken, isPharmacy, orderController.deleteOrder);
 
 module.exports = router;

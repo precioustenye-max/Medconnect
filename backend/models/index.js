@@ -13,6 +13,7 @@ db.Order = require("./Order")(sequelize, DataTypes);
 db.OrderItem = require("./OrderItem")(sequelize, DataTypes);
 db.Prescription = require("./Prescription")(sequelize, DataTypes);
 db.User = require("./user.model");
+db.Notification = require("./Notification")(sequelize);
 
 
 // Pharmacy - Drug (1:M)
@@ -46,5 +47,9 @@ db.Prescription.belongsTo(db.User, { foreignKey: "userId" });
 // Pharmacy - Prescription (1:M)
 db.Pharmacy.hasMany(db.Prescription, { foreignKey: "pharmacyId" });
 db.Prescription.belongsTo(db.Pharmacy, { foreignKey: "pharmacyId" });
+
+// User - Notification (1:M)
+db.User.hasMany(db.Notification, { foreignKey: "userId" });
+db.Notification.belongsTo(db.User, { foreignKey: "userId" });
 
 module.exports = db;

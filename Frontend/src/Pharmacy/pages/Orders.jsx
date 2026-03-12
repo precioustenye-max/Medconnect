@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getMyPharmacyOrders, updateOrderStatus } from "../../services/pharmacy.api";
+import { deleteOrder, getMyPharmacyOrders, updateOrderStatus } from "../../services/pharmacy.api";
 
 export default function PharmacyOrders() {
   const [orders, setOrders] = useState([]);
@@ -32,6 +32,20 @@ export default function PharmacyOrders() {
       setMessage("Order status updated");
     } catch (err) {
       setError(err.response?.data?.message || "Failed to update order");
+    }
+  };
+
+  const removeOrder = async (id) => {
+    setMessage("");
+    setError("");
+    const shouldDelete = window.confirm("Delete this order? This cannot be undone.");
+    if (!shouldDelete) return;
+    try {
+      await deleteOrder(id);
+      setOrders((prev) => prev.filter((order) => order.id !== id));
+      setMessage("Order deleted");
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to delete order");
     }
   };
 
@@ -68,26 +82,34 @@ export default function PharmacyOrders() {
           <div key={order.id} className="bg-white border border-slate-200 rounded-xl p-6 hover:shadow-lg hover:border-slate-300 transition-all">
             <div className="flex flex-wrap justify-between gap-4 mb-4">
               <div>
-                <p className="text-2xl font-bold text-slate-900">Order #{order.id}</p>
+                <p className="text-2xl font-bold text-slate-900">Order</p>
               </div>
               <div className="text-right">
                 <p className="text-sm text-slate-600 font-medium">Total Amount</p>
-                <p className="text-2xl font-bold text-emerald-500">${Number(order.totalAmount || 0).toFixed(2)}</p>
+                <p className="text-2xl font-bold text-emerald-500">CFA{Number(order.totalAmount || 0).toFixed(2)}</p>
               </div>
             </div>
-            <div className="flex items-center gap-3 mt-4 pt-4 border-t border-slate-200">
-              <span className="text-slate-700 font-semibold">Status:</span>
-              <select
-                className="border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-slate-500 focus:border-slate-500 outline-none transition bg-white font-medium text-slate-700"
-                value={order.status}
-                onChange={(e) => updateStatus(order.id, e.target.value)}
+            <div className="flex flex-wrap items-center justify-between gap-3 mt-4 pt-4 border-t border-slate-200">
+              <div className="flex items-center gap-3">
+                <span className="text-slate-700 font-semibold">Status:</span>
+                <select
+                  className="border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-slate-500 focus:border-slate-500 outline-none transition bg-white font-medium text-slate-700"
+                  value={order.status}
+                  onChange={(e) => updateStatus(order.id, e.target.value)}
+                >
+                  <option value="pending">pending</option>
+                  <option value="paid">paid</option>
+                  <option value="processing">processing</option>
+                  <option value="delivered">delivered</option>
+                  <option value="cancelled">cancelled</option>
+                </select>
+              </div>
+              <button
+                onClick={() => removeOrder(order.id)}
+                className="text-sm font-semibold text-red-600 border border-red-200 px-4 py-2 rounded-lg hover:bg-red-50 transition"
               >
-                <option value="pending">pending</option>
-                <option value="paid">paid</option>
-                <option value="processing">processing</option>
-                <option value="delivered">delivered</option>
-                <option value="cancelled">cancelled</option>
-              </select>
+                Delete order
+              </button>
             </div>
           </div>
         ))}
